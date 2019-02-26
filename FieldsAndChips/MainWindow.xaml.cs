@@ -18,6 +18,11 @@ namespace FieldsAndChips
         //public Canvas testBoard = new Canvas();
 
         Random random = new Random();
+        int gameState = 1;
+        int xZ = 0;
+        int yZ = 0;
+        int chipZ = 0;
+        int fieldZ = 0;
 
         public double xMinimalResolution = 320;
         public double yMinimalResolution = 200;
@@ -30,6 +35,9 @@ namespace FieldsAndChips
         public int xCells;
         public int yCells;
 
+        public int menuXCells;
+        public int menuYCells;
+
         public double cellSize;
 
         public BitmapImage[] pictures = new BitmapImage[31];
@@ -41,11 +49,13 @@ namespace FieldsAndChips
         BoardCell menuCell = new BoardCell();
 
         public bool isMenuOpened = false;
+
         public int leftClicked = 0;
         public int rightClicked = 0;
+        public int[,] clicked = new int[2, 2];
 
-        public int menuXCells;
-        public int menuYCells;
+        public List<List<int>> historyQueue = new List<List<int>>();
+        public List<List<int>> historyStack = new List<List<int>>();
 
         public MainWindow()
         {
@@ -121,8 +131,6 @@ namespace FieldsAndChips
                 {
                     boardCells[i].Add(new BoardCell());
 
-                    //FieldsAndChipsMainWindow.Icon = null;
-
                     Board.Children.Add(boardCells[i][j]);
 
                     boardCells[i][j].MouseLeftButtonDown += new MouseButtonEventHandler(cell_LeftClick);
@@ -132,6 +140,7 @@ namespace FieldsAndChips
                     coordinates[0] = i;
                     coordinates[1] = j;
                     boardCells[i][j].Tag = coordinates;
+                    //boardCells[i][j].Tag = i * 100 + j;
 
                     boardCells[i][j].Width = cellSize;
                     boardCells[i][j].Height = cellSize;
@@ -143,8 +152,6 @@ namespace FieldsAndChips
             }
 
             //MessageBox.Show(boardCells[0].Count.ToString() + " " + boardCells.Count.ToString());
-
-            //boardCells[13][10].FieldPicture.Source = pictures[1];
             
         }
 
@@ -268,7 +275,7 @@ namespace FieldsAndChips
             //MessageBox.Show(fields[xCells - 1][yCells - 1].ToString());
         }
 
-        public void ChangeBoardCell(int x, int y) //, int field, int chip)
+        public void ChangeBoardCell(int x, int y) 
         {
             int field = fields[x][y];
             int chip = chips[x][y];
@@ -342,11 +349,95 @@ namespace FieldsAndChips
             }
         }
 
-        public int[] GetCellCoordinates(object sender)
+        public int GetCellCoordinates(object sender, bool isX)
         {
             int[] coordinates = (int[])(sender as BoardCell).Tag;
-            MessageBox.Show(coordinates[0] + " " + coordinates[1]);
-            return coordinates;
+            //MessageBox.Show(coordinates[0] + " " + coordinates[1]);
+            if (isX)
+            {
+                return coordinates[0];
+            }
+            else
+            {
+                return coordinates[1];
+            }
+        }
+
+        public void LeftSingleClick(int x, int y)
+        {
+            switch (gameState)
+            {
+                case 1:
+                    if (chips[x][y] > 0)
+                    {
+                        ReserveCurrent(x, y);
+
+                        gameState = 2;
+                    }
+                    break;
+                case -1:
+                    if (chips[x][y] < 0)
+                    {
+                        ReserveCurrent(x, y);
+
+                        gameState = -2;
+                    }
+                    break;
+                case 2:
+                case -2:
+                    FinalizeMove(x, y, false);
+
+                    break;
+            }
+            
+            //MessageBox.Show("Left " + x + " " + y);
+        }
+
+        public void RightSingleClick(int x, int y)
+        {
+
+        }
+
+        public void LeftDoubleClick(int x, int y)
+        {
+
+        }
+
+        public void RightDoubleClick(int x, int y)
+        {
+
+        }
+
+        public void ReserveCurrent(int x, int y)
+        {
+            xZ = x;
+            yZ = y;
+            fieldZ = fields[x][y];
+            chipZ = chips[x][y];
+        }
+
+        public void FinalizeMove(int x, int y, bool promote)
+        {
+
+        }
+
+        public void ClearHistory()
+        {
+            historyQueue.Clear();
+            historyStack.Clear();
+        }
+
+        public void AddToHistory(int gameState, int startX, int startY, int startInitialChip, int startInitialField,
+            int startFinalChip, int startFinalField, int endX, int endY, int endInitialChip, int endInitialField,
+            int endFinalChip, int endFinalField)
+        {
+
+        }
+
+        public void AddToHistory(int gameState, int startX, int startY, int startInitialChip, int startInitialField,
+            int startFinalChip, int startFinalField)
+        {
+
         }
 
         public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -369,19 +460,21 @@ namespace FieldsAndChips
         {
 
             leftClicked++;
+            clicked[0, 1] = clicked[0, 0];
+            clicked[0, 0] = sender.GetHashCode();
 
-            if (leftClicked > 1)
+            if (leftClicked > 1 && clicked[0, 0] == clicked[0, 1])
             {
-                MessageBox.Show("Left Double");
+                LeftDoubleClick(GetCellCoordinates(sender, true), GetCellCoordinates(sender, false));
+                //MessageBox.Show("Left Double " + GetCellCoordinates(sender, true) + " " + GetCellCoordinates(sender, false));
             }
 
             await Task.Delay(400);
 
             if (leftClicked == 1)
             {
-                GetCellCoordinates(sender); // GO ON HERE-------------------------------------======
-
-                MessageBox.Show("Left");
+                LeftSingleClick(GetCellCoordinates(sender, true), GetCellCoordinates(sender, false));
+                //MessageBox.Show("Left " + GetCellCoordinates(sender, true) + " " + GetCellCoordinates(sender, false));
             }
 
             leftClicked = 0;
@@ -390,17 +483,21 @@ namespace FieldsAndChips
         private async void cell_RightClick(object sender, MouseEventArgs e)
         {
             rightClicked++;
+            clicked[1, 1] = clicked[1, 0];
+            clicked[1, 0] = sender.GetHashCode();
 
-            if (rightClicked > 1)
+            if (rightClicked > 1 && clicked[1, 0] == clicked[1, 1])
             {
-                MessageBox.Show("Right Double");
+                RightDoubleClick(GetCellCoordinates(sender, true), GetCellCoordinates(sender, false));
+                //MessageBox.Show("Roght Double " + GetCellCoordinates(sender, true) + " " + GetCellCoordinates(sender, false));
             }
 
             await Task.Delay(400);
 
             if (rightClicked == 1)
             {
-                MessageBox.Show("Right");
+                RightSingleClick(GetCellCoordinates(sender, true), GetCellCoordinates(sender, false));
+                //MessageBox.Show("Right " + GetCellCoordinates(sender, true) + " " + GetCellCoordinates(sender, false));
             }
 
             rightClicked = 0;
