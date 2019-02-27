@@ -18,11 +18,15 @@ namespace FieldsAndChips
         //public Canvas testBoard = new Canvas();
 
         Random random = new Random();
+
         int gameState = 1;
-        int xZ = 0;
-        int yZ = 0;
-        int chipZ = 0;
-        int fieldZ = 0;
+        int xA = 0;
+        int yA = 0;
+        int chipA = 0;
+        int fieldA = 0;
+
+        int chipB = 0;
+        int fieldB = 0;
 
         public double xMinimalResolution = 320;
         public double yMinimalResolution = 200;
@@ -31,28 +35,31 @@ namespace FieldsAndChips
         public double yResolution = 580;
 
         public double sideMargin = 38;
+        public double sideAreaPercentage = 10;
+        public double sideArea = 0;
 
         public int xCells;
         public int yCells;
 
-        public int menuXCells;
-        public int menuYCells;
+        //public int menuXCells;
+        //public int menuYCells;
 
         public double cellSize;
 
         public BitmapImage[] pictures = new BitmapImage[31];
-        public BitmapImage menuPicture = new BitmapImage();
+        public BitmapImage[] menuPictures = new BitmapImage[5];
 
         public List<List<int>> fields = new List<List<int>>();
         public List<List<int>> chips = new List<List<int>>();
         public List<List<BoardCell>> boardCells = new List<List<BoardCell>>();
-        BoardCell menuCell = new BoardCell();
+        public List<BoardCell> menuCells = new List<BoardCell>();
 
         public bool isMenuOpened = false;
 
         public int leftClicked = 0;
         public int rightClicked = 0;
-        public int[,] clicked = new int[2, 2];
+        public List<object> leftClicks = new List<object>();
+        public List<object> rightClicks = new List<object>();
 
         public List<List<int>> historyQueue = new List<List<int>>();
         public List<List<int>> historyStack = new List<List<int>>();
@@ -68,8 +75,6 @@ namespace FieldsAndChips
             ConfigureFromFile();
 
             ConfigureBoard();
-
-            
         }
 
         public void SetResolution()
@@ -97,12 +102,16 @@ namespace FieldsAndChips
 
         public void ChangeCellSize()
         {
-            double xCellEstimateSize = Math.Floor((Math.Max(xResolution, xMinimalResolution) - sideMargin) / (xCells + 2));
+            sideArea = Math.Floor(Math.Max(yResolution, yMinimalResolution) * sideAreaPercentage / 100);
+
+            double xCellEstimateSize = Math.Floor((Math.Max(xResolution, xMinimalResolution) - sideMargin - sideArea) /
+                (xCells + 2));
+            //double xCellEstimateSize = Math.Floor((Math.Max(xResolution, xMinimalResolution) - sideArea) / (xCells + 2));
             double yCellEstimateSize = Math.Floor((Math.Max(yResolution, yMinimalResolution) - sideMargin) / yCells);
 
             cellSize = Math.Min(xCellEstimateSize, yCellEstimateSize);
 
-            //MessageBox.Show("cellSize = " + cellSize);
+            //MessageBox.Show("cellSize = " + cellSize + " sideArea = " + sideArea);
 
         }
 
@@ -110,9 +119,9 @@ namespace FieldsAndChips
         {
             SetBoard();
 
-            SetInitialPosition();
-
             SetButtons();
+
+            SetInitialPosition();
         }
 
         public void SetBoard()
@@ -140,14 +149,11 @@ namespace FieldsAndChips
                     coordinates[0] = i;
                     coordinates[1] = j;
                     boardCells[i][j].Tag = coordinates;
-                    //boardCells[i][j].Tag = i * 100 + j;
 
                     boardCells[i][j].Width = cellSize;
                     boardCells[i][j].Height = cellSize;
                     Canvas.SetLeft(boardCells[i][j], i * cellSize);
-                    Canvas.SetTop(boardCells[i][j], j * cellSize);
-
-                    
+                    Canvas.SetTop(boardCells[i][j], j * cellSize);  
                 }
             }
 
@@ -170,10 +176,7 @@ namespace FieldsAndChips
                 }
             }
 
-            menuCell.Height = cellSize;
-            menuCell.Width = cellSize;
-            Canvas.SetLeft(menuCell, (xCells + 1) * cellSize);
-            Canvas.SetTop(menuCell, 0);
+            ResizeButtons();
         }
 
         public void ConfigureFromFile()
@@ -236,22 +239,45 @@ namespace FieldsAndChips
 
         public void SetButtons()
         {
-            
-            Board.Children.Add(menuCell);
-            menuCell.Height = cellSize;
-            menuCell.Width = cellSize;
-            Canvas.SetLeft(menuCell, (xCells + 1) * cellSize);
-            Canvas.SetTop(menuCell, 0);
-            menuCell.MovePicture.Visibility = Visibility.Visible;
-            menuCell.MovePicture.Source = menuPicture;
+            menuCells.Clear();
 
-            menuCell.MouseLeftButtonDown += new MouseButtonEventHandler(menu_LeftClick);
+            for (int i = 0; i < 4; i++)
+            {
+                menuCells.Add(new BoardCell());
+                Board.Children.Add(menuCells[i]);
+                menuCells[i].FieldPicture.Visibility = Visibility.Visible;
+                menuCells[i].FieldPicture.Source = menuPictures[i];
+            }
+
+            menuCells[3].ChipPicture.Visibility = Visibility.Hidden;
+            menuCells[3].ChipPicture.Source = menuPictures[4];
+
+            menuCells[0].MouseLeftButtonDown += new MouseButtonEventHandler(menu_LeftClick);
+            menuCells[1].MouseLeftButtonDown += new MouseButtonEventHandler(stepBackward_LeftClick);
+            menuCells[2].MouseLeftButtonDown += new MouseButtonEventHandler(stepForward_LeftClick);
+
+            ResizeButtons();
+        }
+
+        public void ResizeButtons()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                menuCells[i].Height = sideArea;
+                menuCells[i].Width = sideArea;
+                Canvas.SetLeft(menuCells[i], (xCells + 2) * cellSize);
+                Canvas.SetTop(menuCells[i], i * sideArea);
+            }
         }
 
         public void ClearBoard()
         {
             fields.Clear();
             chips.Clear();
+            ClearHistory();
+            gameState = 1;
+            leftClicks.Clear();
+            rightClicks.Clear();
         }
 
         public void SetInitialPosition()
@@ -272,7 +298,9 @@ namespace FieldsAndChips
                 }
             }
 
-            //MessageBox.Show(fields[xCells - 1][yCells - 1].ToString());
+            ShowGameState();
+
+            //MessageBox.Show("OK!");
         }
 
         public void ChangeBoardCell(int x, int y) 
@@ -307,7 +335,11 @@ namespace FieldsAndChips
         {
             try
             {
-                menuPicture = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/M.png"));
+                menuPictures[0] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/M.png"));
+                menuPictures[1] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/B.png"));
+                menuPictures[2] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/F.png"));
+                menuPictures[3] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/Wh.png"));
+                menuPictures[4] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/Bl.png"));
 
                 for (int i = 0; i < 31; i++)
                 {
@@ -373,6 +405,7 @@ namespace FieldsAndChips
                         ReserveCurrent(x, y);
 
                         gameState = 2;
+                        ShowGameState();
                     }
                     break;
                 case -1:
@@ -381,6 +414,7 @@ namespace FieldsAndChips
                         ReserveCurrent(x, y);
 
                         gameState = -2;
+                        ShowGameState();
                     }
                     break;
                 case 2:
@@ -410,15 +444,134 @@ namespace FieldsAndChips
 
         public void ReserveCurrent(int x, int y)
         {
-            xZ = x;
-            yZ = y;
-            fieldZ = fields[x][y];
-            chipZ = chips[x][y];
+            xA = x;
+            yA = y;
+            fieldA = fields[x][y];
+            chipA = chips[x][y];
         }
 
         public void FinalizeMove(int x, int y, bool promote)
         {
+            fieldB = fields[x][y];
+            chipB = chips[x][y];
 
+            switch (gameState)
+            {
+                case 2:
+                    if (chips[x][y] == 0)
+                    {
+                        if (IsMovePossible(x, y))
+                        {
+                            chips[xA][yA] = 0;
+                            ChangeBoardCell(xA, yA);
+                            chips[x][y] = chipA;
+
+                            if (promote == true)
+                            {
+                                switch (chips[x][y])
+                                {
+                                    case 9:
+                                        if (fields[x][y] == 8)
+                                        {
+                                            chips[x][y] = 10;
+                                        }
+                                        break;
+                                    case 8:
+                                        if (fields[x][y] >= 1 && fields[x][y] <= 7)
+                                        {
+                                            chips[x][y] = 9;
+                                        }
+                                        break;
+                                    case 1:
+                                    case 2:
+                                    case 3:
+                                    case 4:
+                                    case 5:
+                                    case 6:
+                                    case 7:
+                                        if (chips[x][y] == fields[x][y])
+                                        {
+                                            chips[x][y] = ++chips[x][y];
+                                        }
+                                        break;
+                                }
+                            }
+
+                            ChangeBoardCell(x, y);
+
+                            AddToHistory(gameState, xA, yA, chipA, fieldA, chips[xA][yA], fields[xA][yA],
+                                x, y, chipB, fieldB, chips[x][y], fields[x][y]);
+
+                            gameState = -1;
+                            ShowGameState();
+                        }
+                    }
+
+                    break;
+                case -2:
+                    if (chips[x][y] == 0)
+                    {
+                        if (IsMovePossible(x, y))
+                        {
+                            chips[xA][yA] = 0;
+                            ChangeBoardCell(xA, yA);
+                            chips[x][y] = chipA;
+
+                            if (promote == true)
+                            {
+                                switch (chips[x][y])
+                                {
+                                    case -9:
+                                        if (fields[x][y] == 8)
+                                        {
+                                            chips[x][y] = -10;
+                                        }
+                                        break;
+                                    case -8:
+                                        if (fields[x][y] >= 1 && fields[x][y] <= 7)
+                                        {
+                                            chips[x][y] = -9;
+                                        }
+                                        break;
+                                    case -1:
+                                    case -2:
+                                    case -3:
+                                    case -4:
+                                    case -5:
+                                    case -6:
+                                    case -7:
+                                        if (chips[x][y] == -fields[x][y])
+                                        {
+                                            chips[x][y] = --chips[x][y];
+                                        }
+                                        break;
+                                }
+                            }
+
+                            ChangeBoardCell(x, y);
+
+                            AddToHistory(gameState, xA, yA, chipA, fieldA, chips[xA][yA], fields[xA][yA],
+                                x, y, chipB, fieldB, chips[x][y], fields[x][y]);
+
+                            gameState = 1;
+                            ShowGameState();
+                        }
+                    }
+
+                    break;
+            }
+        }
+
+        public bool IsMovePossible(int x, int y)
+        {
+            if (Math.Abs(x - xA) == 1 && Math.Abs(y - yA) == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void ClearHistory()
@@ -427,17 +580,171 @@ namespace FieldsAndChips
             historyStack.Clear();
         }
 
-        public void AddToHistory(int gameState, int startX, int startY, int startInitialChip, int startInitialField,
+        public void AddToHistory(int state, int startX, int startY, int startInitialChip, int startInitialField,
             int startFinalChip, int startFinalField, int endX, int endY, int endInitialChip, int endInitialField,
             int endFinalChip, int endFinalField)
         {
+            AddToHistory(state, startX, startY, startInitialChip, startInitialField, startFinalChip, startFinalField);
 
+            historyQueue[historyQueue.Count - 1].Add(endX);
+            historyQueue[historyQueue.Count - 1].Add(endY);
+            historyQueue[historyQueue.Count - 1].Add(endInitialChip);
+            historyQueue[historyQueue.Count - 1].Add(endInitialField);
+            historyQueue[historyQueue.Count - 1].Add(endFinalChip);
+            historyQueue[historyQueue.Count - 1].Add(endFinalField);
         }
 
-        public void AddToHistory(int gameState, int startX, int startY, int startInitialChip, int startInitialField,
+        public void AddToHistory(int state, int startX, int startY, int startInitialChip, int startInitialField,
             int startFinalChip, int startFinalField)
         {
+            switch (state)
+            {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    state = 1;
+                    break;
+                case -1:
+                case -2:
+                case -3:
+                case -4:
+                case -5:
+                    state = -1;
+                    break;
+            }
 
+            historyStack.Clear();
+            historyQueue.Add(new List<int>());
+
+            historyQueue[historyQueue.Count - 1].Add(state);
+            historyQueue[historyQueue.Count - 1].Add(startX);
+            historyQueue[historyQueue.Count - 1].Add(startY);
+            historyQueue[historyQueue.Count - 1].Add(startInitialChip);
+            historyQueue[historyQueue.Count - 1].Add(startInitialField);
+            historyQueue[historyQueue.Count - 1].Add(startFinalChip);
+            historyQueue[historyQueue.Count - 1].Add(startFinalField);
+        }
+
+        public void StepBack()
+        {
+            if (historyQueue.Count > 0)
+            {
+                int x;
+                int y;
+                int chip;
+                int field;
+
+                gameState = historyQueue[historyQueue.Count - 1][0];
+                ShowGameState();
+
+                x = historyQueue[historyQueue.Count - 1][1];
+                y = historyQueue[historyQueue.Count - 1][2];
+                chip = historyQueue[historyQueue.Count - 1][3];
+                field = historyQueue[historyQueue.Count - 1][4];
+
+                chips[x][y] = chip;
+                fields[x][y] = field;
+                ChangeBoardCell(x, y);
+
+                historyStack.Add(new List<int>());
+
+                for (int i = 0; i < 7; i++)
+                {
+                    historyStack[historyStack.Count - 1].Add(historyQueue[historyQueue.Count - 1][i]);
+                }
+
+                if (historyQueue[historyQueue.Count - 1].Count == 13)
+                {
+                    x = historyQueue[historyQueue.Count - 1][7];
+                    y = historyQueue[historyQueue.Count - 1][8];
+                    chip = historyQueue[historyQueue.Count - 1][9];
+                    field = historyQueue[historyQueue.Count - 1][10];
+
+                    chips[x][y] = chip;
+                    fields[x][y] = field;
+                    ChangeBoardCell(x, y);
+
+                    for (int i = 7; i < 13; i++)
+                    {
+                        historyStack[historyStack.Count - 1].Add(historyQueue[historyQueue.Count - 1][i]);
+                    }
+                }
+
+                historyQueue.RemoveAt(historyQueue.Count - 1);
+            }
+            else
+            {
+                MessageBox.Show("There are no more moves back in history.");
+            }
+        }
+
+        public void StepForward()
+        {
+            if (historyStack.Count > 0)
+            {
+                int x;
+                int y;
+                int chip;
+                int field;
+
+                gameState = -historyStack[historyStack.Count - 1][0];
+                ShowGameState();
+
+                x = historyStack[historyStack.Count - 1][1];
+                y = historyStack[historyStack.Count - 1][2];
+                chip = historyStack[historyStack.Count - 1][5];
+                field = historyStack[historyStack.Count - 1][6];
+
+                chips[x][y] = chip;
+                fields[x][y] = field;
+                ChangeBoardCell(x, y);
+
+                historyQueue.Add(new List<int>());
+
+                for (int i = 0; i < 7; i++)
+                {
+                    historyQueue[historyQueue.Count - 1].Add(historyStack[historyStack.Count - 1][i]);
+                }
+
+                if (historyStack[historyStack.Count - 1].Count == 13)
+                {
+                    x = historyStack[historyStack.Count - 1][7];
+                    y = historyStack[historyStack.Count - 1][8];
+                    chip = historyStack[historyStack.Count - 1][11];
+                    field = historyStack[historyStack.Count - 1][12];
+
+                    chips[x][y] = chip;
+                    fields[x][y] = field;
+                    ChangeBoardCell(x, y);
+
+                    for (int i = 7; i < 13; i++)
+                    {
+                        historyQueue[historyQueue.Count - 1].Add(historyStack[historyStack.Count - 1][i]);
+                    }
+                }
+
+                historyStack.RemoveAt(historyStack.Count - 1);
+            }
+            else
+            {
+                MessageBox.Show("There are no moves forward in history.");
+            }
+        }
+
+        public void ShowGameState()
+        {
+            if (gameState > 0)
+            {
+                menuCells[3].FieldPicture.Visibility = Visibility.Visible;
+                menuCells[3].ChipPicture.Visibility = Visibility.Hidden;
+            }
+            if (gameState < 0)
+            {
+                menuCells[3].FieldPicture.Visibility = Visibility.Hidden;
+                menuCells[3].ChipPicture.Visibility = Visibility.Visible;
+            }
         }
 
         public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -456,52 +763,108 @@ namespace FieldsAndChips
             }
         }
 
+        public void stepBackward_LeftClick(object sender, MouseButtonEventArgs e)
+        {
+            StepBack();
+        }
+
+        public void stepForward_LeftClick(object sender, MouseButtonEventArgs e)
+        {
+            StepForward();
+        }
+
         private async void cell_LeftClick(object sender, MouseButtonEventArgs e)
         {
-
-            leftClicked++;
-            clicked[0, 1] = clicked[0, 0];
-            clicked[0, 0] = sender.GetHashCode();
-
-            if (leftClicked > 1 && clicked[0, 0] == clicked[0, 1])
+            try
             {
-                LeftDoubleClick(GetCellCoordinates(sender, true), GetCellCoordinates(sender, false));
-                //MessageBox.Show("Left Double " + GetCellCoordinates(sender, true) + " " + GetCellCoordinates(sender, false));
+                leftClicked++;
+                leftClicks.Add(sender);
+
+                //if (rightClicked == 0 && leftClicks.Count > 1)
+                if (leftClicks.Count > 1)
+                {
+                    if (leftClicks[0] == leftClicks[1])
+                    {
+                        LeftDoubleClick(GetCellCoordinates(leftClicks[0], true), GetCellCoordinates(leftClicks[0], false));
+                        //MessageBox.Show("! Left Double " + GetCellCoordinates(leftClicks[0], true) + " " + GetCellCoordinates(leftClicks[0], false));
+                        leftClicks.Clear();
+                        rightClicks.Clear();
+                    }
+                    else
+                    {
+                        LeftSingleClick(GetCellCoordinates(leftClicks[0], true), GetCellCoordinates(leftClicks[0], false));
+                        LeftSingleClick(GetCellCoordinates(leftClicks[1], true), GetCellCoordinates(leftClicks[1], false));
+                        //MessageBox.Show("@ Left " + GetCellCoordinates(leftClicks[0], true) + " " + GetCellCoordinates(leftClicks[0], false));
+                        //MessageBox.Show("# Left " + GetCellCoordinates(leftClicks[1], true) + " " + GetCellCoordinates(leftClicks[1], false));
+                        leftClicks.Clear();
+                        rightClicks.Clear();
+                    }
+                }
+
+                await Task.Delay(300);
+
+                //if (rightClicked == 0 && leftClicks.Count == 1)
+                if (leftClicks.Count == 1)
+                {
+                    LeftSingleClick(GetCellCoordinates(leftClicks[0], true), GetCellCoordinates(leftClicks[0], false));
+                    //MessageBox.Show("$ Left " + GetCellCoordinates(leftClicks[0], true) + " " + GetCellCoordinates(leftClicks[0], false));
+                    leftClicks.Clear();
+                    rightClicks.Clear();
+                }
+
+                leftClicked = 0;
             }
-
-            await Task.Delay(400);
-
-            if (leftClicked == 1)
+            catch (Exception ex)
             {
-                LeftSingleClick(GetCellCoordinates(sender, true), GetCellCoordinates(sender, false));
-                //MessageBox.Show("Left " + GetCellCoordinates(sender, true) + " " + GetCellCoordinates(sender, false));
+                MessageBox.Show(ex.Message + " " + ex.StackTrace);
             }
-
-            leftClicked = 0;
         }
 
         private async void cell_RightClick(object sender, MouseEventArgs e)
         {
-            rightClicked++;
-            clicked[1, 1] = clicked[1, 0];
-            clicked[1, 0] = sender.GetHashCode();
-
-            if (rightClicked > 1 && clicked[1, 0] == clicked[1, 1])
+            try
             {
-                RightDoubleClick(GetCellCoordinates(sender, true), GetCellCoordinates(sender, false));
-                //MessageBox.Show("Roght Double " + GetCellCoordinates(sender, true) + " " + GetCellCoordinates(sender, false));
+                rightClicked++;
+                rightClicks.Add(sender);
+
+                //if (leftClicked == 0 && rightClicks.Count > 1)
+                if (rightClicks.Count > 1)
+                {
+                    if (rightClicks[0] == rightClicks[1])
+                    {
+                        LeftDoubleClick(GetCellCoordinates(rightClicks[0], true), GetCellCoordinates(rightClicks[0], false));
+                        //MessageBox.Show("! Right Double " + GetCellCoordinates(rightClicks[0], true) + " " + GetCellCoordinates(rightClicks[0], false));
+                        rightClicks.Clear();
+                        leftClicks.Clear();
+                    }
+                    else
+                    {
+                        LeftSingleClick(GetCellCoordinates(rightClicks[0], true), GetCellCoordinates(rightClicks[0], false));
+                        LeftSingleClick(GetCellCoordinates(rightClicks[1], true), GetCellCoordinates(rightClicks[1], false));
+                        //MessageBox.Show("@ Right " + GetCellCoordinates(rightClicks[0], true) + " " + GetCellCoordinates(rightClicks[0], false));
+                        //MessageBox.Show("# Right " + GetCellCoordinates(rightClicks[1], true) + " " + GetCellCoordinates(rightClicks[1], false));
+                        rightClicks.Clear();
+                        leftClicks.Clear();
+                    }
+                }
+
+                await Task.Delay(300);
+
+                //if (leftClicked == 0 && rightClicks.Count == 1)
+                if (rightClicks.Count == 1)
+                {
+                    LeftSingleClick(GetCellCoordinates(rightClicks[0], true), GetCellCoordinates(rightClicks[0], false));
+                    //MessageBox.Show("$ Right " + GetCellCoordinates(rightClicks[0], true) + " " + GetCellCoordinates(rightClicks[0], false));
+                    rightClicks.Clear();
+                    leftClicks.Clear();
+                }
+
+                rightClicked = 0;
             }
-
-            await Task.Delay(400);
-
-            if (rightClicked == 1)
+            catch (Exception ex)
             {
-                RightSingleClick(GetCellCoordinates(sender, true), GetCellCoordinates(sender, false));
-                //MessageBox.Show("Right " + GetCellCoordinates(sender, true) + " " + GetCellCoordinates(sender, false));
+                MessageBox.Show(ex.Message + " " + ex.StackTrace);
             }
-
-            rightClicked = 0;
         }
-
     }
 }
