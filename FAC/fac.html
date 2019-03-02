@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Fields And Chips</title>
+	</head>
+	<body>
+
+		     <!-- <div class="f0000" style="width:60px; height:60px" >      -->
+		     <!-- <img id="f0000" height="50px" width="50px" src="images\10.png" />      -->
+		     <!-- </div>   -->
+			 <!-- <div class="f0001" style="width:60px; height:60px" >      -->
+		     <!-- <img id="f0001" height="50px" width="50px" src="images\9.png" />      -->
+		     <!-- </div> -->
+			 <!-- <br> -->
+			 <!-- <span class="f0002" style="width:60px;" >      -->
+		     <!-- <img id="f0002" height="50px" width="50px" src="images\7.png" />      -->
+		     <!-- </span>   -->
+			 <!-- <span class="f0003" style="width:60px;" >      -->
+		     <!-- <img id="f0003" height="50px" width="50px" src="images\6.png" />      -->
+		     <!-- </span>			  -->
+		     
+		<script>
+			//var test = document.getElementById("0000");
+			//document.write("Test: " + test.id);
+			//var testCell = document.querySelector("span.f101");
+			//testCell.innerHTML ='<img id=\"' + (100 * 1 + 1) + '\" height=\"50px\" width=\"50px\" src=\"images\\' + 5 + '.png\" />';
+			
+			//document.body.appendChild(newArticleDiv);
+			
+			var cellSize = 58;
+			
+			for(var i = 0; i < 11; i++){ 
+				 document.write('<div style=\"height:' + cellSize + 'px\" >');
+				 for(var j = 0; j < 14; j++){ 
+				 var k = (i + 1) * 100 + (j + 1);
+				 document.write('<span class=\"c' + k + '\" height=\"' + cellSize +'px\" width=\"' + cellSize + 'px\" >'); 
+				 document.write('<img id=\"f' + k + '\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\' + 800 + '.png" />'); 
+				 document.write('</span>'); 
+				 }
+				 document.write('</div>');		
+			 }	 
+			 
+			var testCell = document.querySelector("span.c101");
+			testCell.innerHTML ='<img id=\"f' + 101 + '\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\' + 1000 + '.png\" />';
+		</script>
+	</body>
+</html>
