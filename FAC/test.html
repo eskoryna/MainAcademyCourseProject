@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Test</title>
+	</head>
+	<body>
+		<script>
+			<!-- var user ={ -->
+			<!-- name: "Tom", -->
+			<!-- age: 23, -->
+			<!-- married: false -->
+			<!-- }; -->
+ 
+			<!-- localStorage.setItem("user", JSON.stringify(user)); -->
+			<!-- var savedUser = JSON.parse(localStorage.getItem("userr")); -->
+			<!-- document.write(savedUser.name + " " + savedUser.age +" " + savedUser.married); // Tom 23 false -->
+			
+			<!-- var fiels = [[0, 1, 2], [3, 4, 5]]; -->
+			<!-- document.write(fields[0][0]); -->
+			
+			<!-- var p = 11; -->
+			<!-- var q = 14; -->
+			<!-- var fields = []; -->
+			<!-- for(i = 0; i < p; i++){ -->
+				<!-- fields[i] = []; -->
+				<!-- for(j = 0; j < q; j++){ -->
+					<!-- fields[i][j] = i * j; -->
+					<!-- console.log(fields[i][j]); -->
+				<!-- } -->
+			<!-- } -->
+			
+			for(i = 0; i < 30; i++){
+				var x = randomInteger(1, 7)
+				console.log(x);
+			}
+			
+			function randomInteger(min, max) {
+				var rand = min + Math.random() * (max + 1 - min);
+				rand = Math.floor(rand);
+				return rand;
+			}
+			
+			
+		</script>
+	</body>
+</html>

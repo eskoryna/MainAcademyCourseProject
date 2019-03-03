@@ -6,8 +6,8 @@
 	</head>
 	<body>
 
-		     <!-- <div class="f0000" style="width:60px; height:60px" >      -->
-		     <!-- <img id="f0000" height="50px" width="50px" src="images\10.png" />      -->
+		     <!-- <div class="f00" style="width:60px; height:60px" >      -->
+		     <!-- <img id="f0" height="50px" width="50px" src="images\1000.png" />      -->
 		     <!-- </div>   -->
 			 <!-- <div class="f0001" style="width:60px; height:60px" >      -->
 		     <!-- <img id="f0001" height="50px" width="50px" src="images\9.png" />      -->
@@ -21,28 +21,115 @@
 		     <!-- </span>			  -->
 		     
 		<script>
-			//var test = document.getElementById("0000");
-			//document.write("Test: " + test.id);
-			//var testCell = document.querySelector("span.f101");
-			//testCell.innerHTML ='<img id=\"' + (100 * 1 + 1) + '\" height=\"50px\" width=\"50px\" src=\"images\\' + 5 + '.png\" />';
-			
-			//document.body.appendChild(newArticleDiv);
-			
+			var cellsHorizontally = 14;
+			var cellsVertically = 11;						
 			var cellSize = 58;
+			var currentField = null;
 			
-			for(var i = 0; i < 11; i++){ 
+			var fields = [];
+			var chips = [];
+			
+			
+			for(var i = 1; i <= cellsVertically; i++){ 
 				 document.write('<div style=\"height:' + cellSize + 'px\" >');
-				 for(var j = 0; j < 14; j++){ 
-				 var k = (i + 1) * 100 + (j + 1);
-				 document.write('<span class=\"c' + k + '\" height=\"' + cellSize +'px\" width=\"' + cellSize + 'px\" >'); 
-				 document.write('<img id=\"f' + k + '\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\' + 800 + '.png" />'); 
+				 for(var j = 1; j <= cellsHorizontally; j++){ 
+				 var k = i * 100 + j;
+				 document.write('<span class=\"ff' + k + '\" height=\"' + cellSize +'px\" width=\"' + cellSize + 'px\" >'); 
+				 document.write('<img id=\"f' + k + '\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\' + 500 + '.png" />');
+				 currentField = document.getElementById('f' + k);
+				 currentField.addEventListener("click", boardClick);				 
 				 document.write('</span>'); 
 				 }
+				 
+				 if(i <= 7){
+					var m = i * 100;
+					document.write('<span class=\"cc' + i + '\" height=\"' + cellSize +'px\" width=\"' + cellSize + 'px\" >'); 
+					document.write('<img id=\"c' + i + '\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\' + m + '.png" />');
+					currentField = document.getElementById('c' + i);
+					currentField.addEventListener("click", colorClick);				 
+					document.write('</span>'); 
+				 }
+				 
+				 switch(i){
+					case 8:
+						document.write('<span class=\"toRandomize\" height=\"' + cellSize +'px\" width=\"' + cellSize + 'px\" >');
+						document.write('<img id=\"randomize\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\randomize.png" />');
+						currentField = document.getElementById('randomize');
+						currentField.addEventListener("click", randomizeBoard);				 
+						document.write('</span>'); 
+						break;
+					
+				 }
+				 
 				 document.write('</div>');		
-			 }	 
+			 }
 			 
-			var testCell = document.querySelector("span.c101");
-			testCell.innerHTML ='<img id=\"f' + 101 + '\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\' + 1000 + '.png\" />';
+			 for(i = 0; i < cellsVertically; i++){
+				fields[i] = [];
+				chips[i] = [];
+				for(j = 0; j < cellsHorizontally; j++){
+					fields[i][j] = 8;
+					chips[i][j] = 0;
+					changeCell(i, j, 0, 8);
+				}
+			}
+			
+			function boardClick(event){
+				//alert(event.currentTarget.id);
+				var testCell = document.querySelector("span.f" + event.currentTarget.id);
+				testCell.innerHTML ='<img id=\"' + event.currentTarget.id + '\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\' + 100 + '.png\" />';
+			}
+			
+			function colorClick(event){
+				alert(event.currentTarget.id);
+			}
+			
+			function changeCell(x, y, c, f){
+				var z = (x + 1) * 100 + (y + 1);
+				var m = f * 100;
+				if(c > 0){
+					m += c;
+				}
+				if(c < 0){
+					m += -c + 10;
+				}
+				var cell = document.querySelector("span.ff" + z);
+				cell.innerHTML ='<img id=\"f' + z + '\" height=\"' + cellSize + 'px\" width=\"' + cellSize + 'px\" src=\"images\\' + m + '.png\" />';
+			}
+			
+			function clearBoard(){
+				for(i = 0; i < cellsVertically; i++){
+					for(j = 0; j < cellsHorizontally; j++){
+						fields[i][j] = 8;
+						chips[i][j] = 0;
+						changeCell(i, j, 0, 8);
+					}
+				}
+			}
+			
+			function randomizeBoard(event){
+				clearBoard();
+				for(var k = -10; k <= 10; k++){
+					if(k != 0){
+						var i = randomInteger(0, cellsVertically - 1);
+						var j = randomInteger(0, cellsHorizontally - 1);
+						if(chips[i][j] == 0){
+							chips[i][j] = k;
+							changeCell(i, j, k, 8);
+						}
+						else{
+							k--;
+						}
+					}
+				}
+			}
+			
+			function randomInteger(min, max) {
+				var rand = min + Math.random() * (max + 1 - min);
+				rand = Math.floor(rand);
+				return rand;
+			}
+			
 		</script>
 	</body>
 </html>
