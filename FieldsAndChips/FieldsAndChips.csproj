@@ -73,7 +73,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ApplicationContext.cs" />
+    <Compile Include="ChangeDimensionsWindow.xaml.cs">
+      <DependentUpon>ChangeDimensionsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GamesDatabaseWindow.xaml.cs">
+      <DependentUpon>GamesDatabaseWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SavedGame.cs" />
+    <Compile Include="SaveGameWindow.xaml.cs">
+      <DependentUpon>SaveGameWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="BoardCell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChangeDimensionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GamesDatabaseWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -92,15 +111,12 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Menu.xaml">
+    <Page Include="SaveGameWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Menu.xaml.cs">
-      <DependentUpon>Menu.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

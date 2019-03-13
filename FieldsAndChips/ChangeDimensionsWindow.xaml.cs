@@ -1,18 +1,14 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace FieldsAndChips
 {
-    /// <summary>
-    /// Interaction logic for Menu.xaml
-    /// </summary>
-    public partial class Menu : Window
+    public partial class ChangeDimensions : Window
     {
         public int tryXCells;
         public int tryYCells;
 
-        public Menu()
+        public ChangeDimensions()
         {
             InitializeComponent();
 
@@ -20,43 +16,32 @@ namespace FieldsAndChips
             inputYCells.Text = (Application.Current.MainWindow as MainWindow).yCells.ToString();
         }
 
-        public void randomButton_Click(object sender, RoutedEventArgs e)
-        {
-            (Application.Current.MainWindow as MainWindow).SetRandomStartingPosition();
-            MenuWindow.Close();
-        }
-
         public void cancelButton_Click(object sender, RoutedEventArgs e)
         {
-            MenuWindow.Close();
+            changeDimensionsWindow.Close();
         }
 
         public void okButton_Click(object sender, RoutedEventArgs e)
         {
-            if (tryXCells < 7 || tryXCells > 20)
+            if (tryXCells < 7 || tryXCells > 35)
             {
-                MessageBox.Show("The number of horizontal cells has to be between 7 and 20.");
+                MessageBox.Show("The number of horizontal cells has to be between 7 and 35.");
             }
-            else if(tryYCells < 7 || tryYCells > 25)
+            else if (tryYCells < 7 || tryYCells > 25)
             {
                 MessageBox.Show("The number of vertical cells has to be between 7 and 25.");
             }
             else
             {
                 (Application.Current.MainWindow as MainWindow).ConfigureFromMenu(tryXCells, tryYCells);
-                
-                MenuWindow.Close();
-                //(Application.Current.MainWindow as MainWindow).isMenuOpened = false;
+                changeDimensionsWindow.Close();
             }
         }
 
         public void inputXCells_TextChanged(object sender, TextChangedEventArgs e)
         {
             bool ok = int.TryParse(inputXCells.Text, out tryXCells);
-            if (ok)
-            {
-            }
-            else
+            if (!ok)
             {
                 inputXCells.Text = "";
             }
@@ -65,21 +50,10 @@ namespace FieldsAndChips
         public void inputYCells_TextChanged(object sender, TextChangedEventArgs e)
         {
             bool ok = int.TryParse(inputYCells.Text, out tryYCells);
-            if (ok)
-            {
-            }
-            else
+            if (!ok)
             {
                 inputYCells.Text = "";
             }
-        }
-
-        public void testButton_Click(object sender, RoutedEventArgs e)
-        {
-            (Application.Current.MainWindow as MainWindow).HistoryToString();
-            MenuWindow.Close();
-
-            MessageBox.Show("cdsflkhdkjslf");
         }
     }
 }

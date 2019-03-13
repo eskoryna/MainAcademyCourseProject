@@ -8,13 +8,19 @@
         mc:Ignorable="d"
         Title="Fields And Chips" Icon="fac.ico" Height="580" Width="799" WindowStartupLocation="CenterScreen"
         SizeChanged="Window_SizeChanged">
-    <DockPanel LastChildFill="True">
+    <DockPanel Background="#F6F6F6" LastChildFill="True">
 
         <Menu DockPanel.Dock="Top" Background="#F6F6F6" Height="25">
             <MenuItem Header="Menu">
                 <MenuItem Header="Random Position" Click="random_Click">
                 </MenuItem>
-                <MenuItem Header="Set Board Dimensions" Click="menu_Click">
+                <MenuItem Header="Change Board Dimensions" Click="changeDimensions_Click">
+                </MenuItem>
+                <MenuItem Header="Save Game" Click="saveGame_Click">
+                </MenuItem>
+                <MenuItem Header="Save Game As..." Click="saveGameAs_Click">
+                </MenuItem>
+                <MenuItem Header="Games Database" Click="gamesDatabase_Click">
                 </MenuItem>
             </MenuItem>
         </Menu>
@@ -23,16 +29,40 @@
             <TextBlock x:Name="gameStatus" Foreground="White" />
         </StatusBar>
 
-        <StackPanel DockPanel.Dock="Right" Background="#F6F6F6" Width="80"  >
-            <Button Click="stepBackward_Click" ToolTip="Step back in history" Margin="0,0,10,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+        <StackPanel DockPanel.Dock="Right" Background="#F6F6F6" Width="60"  >
+            <Button Click="stepBackward_Click" ToolTip="Step back in history" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image Source="back.png"  />
             </Button>
-            <Button Click="stepForward_Click" ToolTip="Step forward in history" Margin="0,0,10,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button Click="stepForward_Click" ToolTip="Step forward in history" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image Source="forward.png"  />
             </Button>
         </StackPanel>
 
-        <Canvas x:Name="board" Background="#F6F6F6">
+        <WrapPanel DockPanel.Dock="Right" Background="#F6F6F6" Orientation="Vertical" ItemWidth="55" ItemHeight="55">
+            <Button x:Name="buttonRed" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image x:Name="colorRed"/>
+            </Button>
+            <Button x:Name="buttonOrange" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image x:Name="colorOrange"/>
+            </Button>
+            <Button x:Name="buttonYellow" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image x:Name="colorYellow"/>
+            </Button>
+            <Button x:Name="buttonGreen" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image x:Name="colorGreen"/>
+            </Button>
+            <Button x:Name="buttonAzure" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image x:Name="colorAzure"/>
+            </Button>
+            <Button x:Name="buttonBlue" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image x:Name="colorBlue"/>
+            </Button>
+            <Button x:Name="buttonViolet" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image x:Name="colorViolet"/>
+            </Button>
+        </WrapPanel>
+
+        <Canvas x:Name="board" Background="#F6F6F6" Margin="5,0,0,0">
         </Canvas>
     </DockPanel>
 </Window>

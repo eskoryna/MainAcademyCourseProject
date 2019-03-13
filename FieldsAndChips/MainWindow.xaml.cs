@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,9 +11,6 @@ using System.Windows.Media.Imaging;
 
 namespace FieldsAndChips
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public int xCells;
@@ -32,28 +30,14 @@ namespace FieldsAndChips
         int chipB = 0;
         int fieldB = 0;
 
-        public double xMinimalResolution = 320;
-        public double yMinimalResolution = 200;
-
-        public double xResolution = 799;
-        public double yResolution = 580;
-
-        public double sideMargin = 38;
-        public double sideAreaPercentage = 10;
-        public double sideArea = 0;
-
         public double cellSize;
 
         public BitmapImage[] pictures = new BitmapImage[31];
-        //public BitmapImage[] menuPictures = new BitmapImage[5];
 
         public List<List<int>> fields = new List<List<int>>();
         public List<List<int>> chips = new List<List<int>>();
         public List<List<BoardCell>> boardCells = new List<List<BoardCell>>();
         public List<BoardCell> colorCells = new List<BoardCell>();
-        //public List<BoardCell> menuCells = new List<BoardCell>();
-
-        //public bool isMenuOpened = false;
 
         public int leftClicked = 0;
         public int rightClicked = 0;
@@ -63,32 +47,24 @@ namespace FieldsAndChips
         public List<List<int>> historyQueue = new List<List<int>>();
         public List<List<int>> historyStack = new List<List<int>>();
 
+        ApplicationContext db;
+        SavedGame savedGame;
+
         public MainWindow()
         {
             InitializeComponent();
-            //SetIcon();
+
+            db = new ApplicationContext();
+
             LoadPictures();
+            SetColors();
             ConfigureFromFile();
             ConfigureBoard();
         }
 
-        public void SetResolution()
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                xResolution = SystemParameters.WorkArea.Width;
-                yResolution = SystemParameters.WorkArea.Height;
-            }
-            else
-            {
-                xResolution = ActualWidth;
-                yResolution = ActualHeight;
-            }
-        }
-
         public void ChangeCellSize()
         {
-            double xCellEstimateSize = Math.Floor(board.ActualWidth / (xCells + 2));
+            double xCellEstimateSize = Math.Floor(board.ActualWidth / (xCells));
             double yCellEstimateSize = Math.Floor(board.ActualHeight / yCells);
             cellSize = Math.Min(xCellEstimateSize, yCellEstimateSize);
         }
@@ -96,8 +72,6 @@ namespace FieldsAndChips
         public void ConfigureBoard()
         {
             SetBoard();
-            SetColors();
-            //SetButtons();
             SetInitialPosition();
         }
 
@@ -132,46 +106,21 @@ namespace FieldsAndChips
 
         public void SetColors()
         {
-            colorCells.Clear();
-            for (int i = 0; i < 10; i++)
-            {
-                colorCells.Add(new BoardCell());
-                board.Children.Add(colorCells[i]);
-                colorCells[i].FieldPicture.Visibility = Visibility.Visible;
-                colorCells[i].FieldPicture.Source = pictures[i + 1];
-                colorCells[i].Tag = i + 1;
-                colorCells[i].MouseLeftButtonDown += new MouseButtonEventHandler(color_LeftClick);
-                colorCells[i].MouseRightButtonDown += new MouseButtonEventHandler(color_RightClick);
-            }
-
-            for (int i = 7; i < 10; i++)
-            {
-                colorCells[i].FieldPicture.Visibility = Visibility.Hidden;
-            }
-
-            ResizeColors();
+            colorRed.Source = pictures[1];
+            buttonRed.Tag = 1;
+            colorOrange.Source = pictures[2];
+            buttonOrange.Tag = 2;
+            colorYellow.Source = pictures[3];
+            buttonYellow.Tag = 3;
+            colorGreen.Source = pictures[4];
+            buttonGreen.Tag = 4;
+            colorAzure.Source = pictures[5];
+            buttonAzure.Tag = 5;
+            colorBlue.Source = pictures[6];
+            buttonBlue.Tag = 6;
+            colorViolet.Source = pictures[7];
+            buttonViolet.Tag = 7;
         }
-
-        //public void SetButtons()
-        //{
-            //menuCells.Clear();
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    menuCells.Add(new BoardCell());
-            //    board.Children.Add(menuCells[i]);
-            //    menuCells[i].FieldPicture.Visibility = Visibility.Visible;
-            //    menuCells[i].FieldPicture.Source = menuPictures[i];
-            //}
-
-            //menuCells[3].ChipPicture.Visibility = Visibility.Hidden;
-            //menuCells[3].ChipPicture.Source = menuPictures[4];
-
-            //menuCells[0].MouseLeftButtonDown += new MouseButtonEventHandler(menu_Click);
-            //menuCells[1].MouseLeftButtonDown += new MouseButtonEventHandler(stepBackward_LeftClick);
-            //menuCells[2].MouseLeftButtonDown += new MouseButtonEventHandler(stepForward_LeftClick);
-
-            //ResizeButtons();
-        //}
 
         public void ResizeBoard()
         {
@@ -186,8 +135,6 @@ namespace FieldsAndChips
                     Canvas.SetTop(boardCells[i][j], j * cellSize);
                 }
             }
-
-            //ResizeButtons();
         }
 
         public void ConfigureFromFile()
@@ -195,14 +142,10 @@ namespace FieldsAndChips
             try
             {
                 List<string> parameters = File.ReadAllLines(Directory.GetCurrentDirectory() + "/fac.cfg").ToList();
-                xMinimalResolution = double.Parse(parameters[0]);
-                yMinimalResolution = double.Parse(parameters[1]);
-                xCells = int.Parse(parameters[2]);
-                yCells = int.Parse(parameters[3]);
-                sideMargin = double.Parse(parameters[4]);
+                xCells = int.Parse(parameters[0]);
+                yCells = int.Parse(parameters[1]);
 
-                if (xMinimalResolution < 320 || yMinimalResolution < 200 || xCells < 7 || xCells > 20 || 
-                    yCells < 7 || yCells > 25 || sideMargin < 0 || sideMargin > 100)
+                if (xCells < 7 || xCells > 35 || yCells < 7 || yCells > 25)
                 {
                     SetDefaultConfiguration();
                 }
@@ -223,53 +166,9 @@ namespace FieldsAndChips
 
         public void SetDefaultConfiguration()
         {
-            xMinimalResolution = 320;
-            yMinimalResolution = 200;
             xCells = 11;
             yCells = 14;
-            sideMargin = 38;
         }
-
-        //public void SetIcon()
-        //{
-        //    try
-        //    {
-        //        FieldsAndChipsMainWindow.Icon = BitmapFrame.Create(new Uri(Directory.GetCurrentDirectory() + "/fac.ico"));
-        //    }
-        //    catch (Exception)
-        //    {
-        //    }
-        //}
-
-        public void ResizeColors()
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                colorCells[i].Height = cellSize;
-                colorCells[i].Width = cellSize;
-            }
-            for (int i = 0; i < 7; i++)
-            {
-                Canvas.SetLeft(colorCells[i], (xCells + 1) * cellSize);
-                Canvas.SetTop(colorCells[i], i * cellSize);
-            }
-            for (int i = 7; i < 10; i++)
-            {
-                Canvas.SetLeft(colorCells[i], xCells * cellSize);
-                Canvas.SetTop(colorCells[i], (i - 7) * cellSize);
-            }
-        }
-
-        //public void ResizeButtons()
-        //{
-        //    for (int i = 0; i < 4; i++)
-        //    {
-        //        menuCells[i].Height = sideArea;
-        //        menuCells[i].Width = sideArea;
-        //        Canvas.SetLeft(menuCells[i], (xCells + 2) * cellSize);
-        //        Canvas.SetTop(menuCells[i], i * sideArea);
-        //    }
-        //}
 
         public void ClearBoard()
         {
@@ -298,8 +197,7 @@ namespace FieldsAndChips
             }
 
             ShowGameState();
-
-            //StartingPositionToString();
+            SetStartingPositionString();
         }
 
         public void ChangeBoardCell(int x, int y) 
@@ -355,7 +253,7 @@ namespace FieldsAndChips
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unable to load images. " + ex.StackTrace);
+                MessageBox.Show("Unable to load image " + ex.StackTrace);
             }
         }
 
@@ -385,7 +283,7 @@ namespace FieldsAndChips
                 }
             }
 
-            //StartingPositionToString();
+            SetStartingPositionString();
         }
 
         public int GetCellCoordinates(object sender, bool isX)
@@ -788,10 +686,18 @@ namespace FieldsAndChips
             }
         }
 
-        public void StartingPositionToString()
+        public string CurrentDateToString()
+        {
+            string gameDate = "";
+            DateTime currentDate = DateTime.Now;
+            gameDate = currentDate.Year + "/" + currentDate.Month.ToString("D2") + "/" + currentDate.Day.ToString("D2");
+            return gameDate;
+        }
+
+        public void SetStartingPositionString()
         {
             int fieldAndChip = 0;
-            startingPosition = xCells + "#" + yCells + "#" + NormalizeGameState(gameState) + "#";
+            startingPosition = NormalizeGameState(gameState) + "#";
             for (int i = 0; i < xCells; i++)
             {
                 for (int j = 0; j < yCells; j++)
@@ -800,11 +706,9 @@ namespace FieldsAndChips
                     startingPosition += fieldAndChip + ";";
                 }
             }
-
-            //MessageBox.Show(startingPosition);
         }
-
-        public void HistoryToString()
+            
+        public string HistoryToString()
         {
             moves = "";
 
@@ -832,7 +736,7 @@ namespace FieldsAndChips
                 }
             }
 
-            MessageBox.Show(moves);
+            return moves;
         }
 
         public void ClearHistory()
@@ -919,10 +823,6 @@ namespace FieldsAndChips
 
                 historyQueue.RemoveAt(historyQueue.Count - 1);
             }
-            else
-            {
-                //MessageBox.Show("There are no more moves back in history.");
-            }
         }
 
         public void StepForward()
@@ -972,10 +872,6 @@ namespace FieldsAndChips
 
                 historyStack.RemoveAt(historyStack.Count - 1);
             }
-            else
-            {
-                //MessageBox.Show("There are no moves forward in history.");
-            }
         }
 
         public void ShowGameState()
@@ -1015,33 +911,56 @@ namespace FieldsAndChips
             }
         }
 
-        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        public void LoadGame(SavedGame savedGame)
         {
-            SetResolution();
-            ResizeBoard();
-            ResizeColors();
+            try
+            {
+                int tryXCells = savedGame.HorizontalCells;
+                int tryYCells = savedGame.VerticalCells;
+
+                if (tryXCells >= 7 && tryXCells <= 35 && tryYCells >= 7 && tryYCells <= 25)
+                {
+                    xCells = tryXCells;
+                    yCells = tryYCells;
+                    ConfigureBoard();
+
+                    string savedGameStartingPosition = savedGame.StartingPosition;
+                    SetSavedGameStartingPosition(savedGameStartingPosition);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to load game.");
+                SetDefaultConfiguration();
+                ConfigureBoard();
+            }
         }
 
-        public void color_LeftClick(object sender, MouseButtonEventArgs e)
+        public void SetSavedGameStartingPosition(string savedGameStartingPosition)
+        {
+            // ================================= GO ON HERE ===================================
+        }
+
+        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ResizeBoard();
+        }
+
+        public void color_LeftClick(object sender, RoutedEventArgs e)
         {
             switch (gameState)
             {
                 case 4:
                 case -4:
-                    int color = (int)(sender as BoardCell).Tag;
+                    int color = (int)(sender as Button).Tag;
                     DefineColor(color);
                     break;
             }
         }
 
-        public void color_RightClick(object sender, MouseButtonEventArgs e)
+        public void changeDimensions_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Right");
-        }
-
-        public void menu_Click(object sender, RoutedEventArgs e)
-        {
-                new Menu().ShowDialog();
+                new ChangeDimensions().ShowDialog();
         }
 
         public void stepBackward_Click(object sender, RoutedEventArgs e)
@@ -1139,6 +1058,57 @@ namespace FieldsAndChips
         public void random_Click(object sender, RoutedEventArgs e)
         {
             SetRandomStartingPosition();
+        }
+
+        public void gamesDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            GamesDatabaseWindow gamesDatabaseWindow = new GamesDatabaseWindow();
+            gamesDatabaseWindow.Show();
+        }
+
+        public void saveGame_Click(object sender, RoutedEventArgs e)
+        {
+            if (savedGame == null)
+            {
+                saveGameAs_Click(sender, e);
+            }
+            else
+            {
+                db = new ApplicationContext();
+                db.SavedGames.Load();
+                SavedGame game = db.SavedGames.FirstOrDefault(d => d.Id == savedGame.Id);
+                if (game != null)
+                {
+                    game.GameDate = CurrentDateToString();
+                    game.HorizontalCells = xCells;
+                    game.VerticalCells = yCells;
+                    game.StartingPosition = startingPosition;
+                    game.Moves = HistoryToString();
+                    db.Entry(game).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        public void saveGameAs_Click(object sender, RoutedEventArgs e)
+        {
+            SaveGameWindow savedGameWindow = new SaveGameWindow(new SavedGame());
+            if (savedGameWindow.ShowDialog() == true)
+            {
+                savedGame = savedGameWindow.SavedGame;
+                savedGame.GameDate = CurrentDateToString();
+                savedGame.HorizontalCells = xCells;
+                savedGame.VerticalCells = yCells;
+                savedGame.StartingPosition = startingPosition;
+                savedGame.Moves = HistoryToString();
+                db.SavedGames.Add(savedGame);
+                db.SaveChanges();
+            }
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            db.Dispose();
         }
     }
 }
