@@ -15,7 +15,11 @@ namespace FieldsAndChips
     /// </summary>
     public partial class MainWindow : Window
     {
-        //public Canvas testBoard = new Canvas();
+        public int xCells;
+        public int yCells;
+
+        public string startingPosition;
+        public string moves;
 
         Random random = new Random();
 
@@ -38,21 +42,18 @@ namespace FieldsAndChips
         public double sideAreaPercentage = 10;
         public double sideArea = 0;
 
-        public int xCells;
-        public int yCells;
-
         public double cellSize;
 
         public BitmapImage[] pictures = new BitmapImage[31];
-        public BitmapImage[] menuPictures = new BitmapImage[5];
+        //public BitmapImage[] menuPictures = new BitmapImage[5];
 
         public List<List<int>> fields = new List<List<int>>();
         public List<List<int>> chips = new List<List<int>>();
         public List<List<BoardCell>> boardCells = new List<List<BoardCell>>();
         public List<BoardCell> colorCells = new List<BoardCell>();
-        public List<BoardCell> menuCells = new List<BoardCell>();
+        //public List<BoardCell> menuCells = new List<BoardCell>();
 
-        public bool isMenuOpened = false;
+        //public bool isMenuOpened = false;
 
         public int leftClicked = 0;
         public int rightClicked = 0;
@@ -65,7 +66,7 @@ namespace FieldsAndChips
         public MainWindow()
         {
             InitializeComponent();
-            SetIcon();
+            //SetIcon();
             LoadPictures();
             ConfigureFromFile();
             ConfigureBoard();
@@ -87,10 +88,8 @@ namespace FieldsAndChips
 
         public void ChangeCellSize()
         {
-            sideArea = Math.Floor(Math.Max(yResolution, yMinimalResolution) * sideAreaPercentage / 100);
-            double xCellEstimateSize = Math.Floor((Math.Max(xResolution, xMinimalResolution) - sideMargin - sideArea) /
-                (xCells + 2));
-            double yCellEstimateSize = Math.Floor((Math.Max(yResolution, yMinimalResolution) - sideMargin) / yCells);
+            double xCellEstimateSize = Math.Floor(board.ActualWidth / (xCells + 2));
+            double yCellEstimateSize = Math.Floor(board.ActualHeight / yCells);
             cellSize = Math.Min(xCellEstimateSize, yCellEstimateSize);
         }
 
@@ -98,14 +97,14 @@ namespace FieldsAndChips
         {
             SetBoard();
             SetColors();
-            SetButtons();
+            //SetButtons();
             SetInitialPosition();
         }
 
         public void SetBoard()
         {
             ChangeCellSize();
-            Board.Children.Clear();
+            board.Children.Clear();
             boardCells.Clear();
 
             for (int i = 0; i < xCells; i++)
@@ -114,7 +113,7 @@ namespace FieldsAndChips
                 for (int j = 0; j < yCells; j++)
                 {
                     boardCells[i].Add(new BoardCell());
-                    Board.Children.Add(boardCells[i][j]);
+                    board.Children.Add(boardCells[i][j]);
                     boardCells[i][j].MouseLeftButtonDown += new MouseButtonEventHandler(cell_LeftClick);
                     boardCells[i][j].MouseRightButtonDown += new MouseButtonEventHandler(cell_RightClick);
 
@@ -137,7 +136,7 @@ namespace FieldsAndChips
             for (int i = 0; i < 10; i++)
             {
                 colorCells.Add(new BoardCell());
-                Board.Children.Add(colorCells[i]);
+                board.Children.Add(colorCells[i]);
                 colorCells[i].FieldPicture.Visibility = Visibility.Visible;
                 colorCells[i].FieldPicture.Source = pictures[i + 1];
                 colorCells[i].Tag = i + 1;
@@ -153,26 +152,26 @@ namespace FieldsAndChips
             ResizeColors();
         }
 
-        public void SetButtons()
-        {
-            menuCells.Clear();
-            for (int i = 0; i < 4; i++)
-            {
-                menuCells.Add(new BoardCell());
-                Board.Children.Add(menuCells[i]);
-                menuCells[i].FieldPicture.Visibility = Visibility.Visible;
-                menuCells[i].FieldPicture.Source = menuPictures[i];
-            }
+        //public void SetButtons()
+        //{
+            //menuCells.Clear();
+            //for (int i = 0; i < 4; i++)
+            //{
+            //    menuCells.Add(new BoardCell());
+            //    board.Children.Add(menuCells[i]);
+            //    menuCells[i].FieldPicture.Visibility = Visibility.Visible;
+            //    menuCells[i].FieldPicture.Source = menuPictures[i];
+            //}
 
-            menuCells[3].ChipPicture.Visibility = Visibility.Hidden;
-            menuCells[3].ChipPicture.Source = menuPictures[4];
+            //menuCells[3].ChipPicture.Visibility = Visibility.Hidden;
+            //menuCells[3].ChipPicture.Source = menuPictures[4];
 
-            menuCells[0].MouseLeftButtonDown += new MouseButtonEventHandler(menu_LeftClick);
-            menuCells[1].MouseLeftButtonDown += new MouseButtonEventHandler(stepBackward_LeftClick);
-            menuCells[2].MouseLeftButtonDown += new MouseButtonEventHandler(stepForward_LeftClick);
+            //menuCells[0].MouseLeftButtonDown += new MouseButtonEventHandler(menu_Click);
+            //menuCells[1].MouseLeftButtonDown += new MouseButtonEventHandler(stepBackward_LeftClick);
+            //menuCells[2].MouseLeftButtonDown += new MouseButtonEventHandler(stepForward_LeftClick);
 
-            ResizeButtons();
-        }
+            //ResizeButtons();
+        //}
 
         public void ResizeBoard()
         {
@@ -188,7 +187,7 @@ namespace FieldsAndChips
                 }
             }
 
-            ResizeButtons();
+            //ResizeButtons();
         }
 
         public void ConfigureFromFile()
@@ -231,16 +230,16 @@ namespace FieldsAndChips
             sideMargin = 38;
         }
 
-        public void SetIcon()
-        {
-            try
-            {
-                FieldsAndChipsMainWindow.Icon = BitmapFrame.Create(new Uri(Directory.GetCurrentDirectory() + "/fac.ico"));
-            }
-            catch (Exception)
-            {
-            }
-        }
+        //public void SetIcon()
+        //{
+        //    try
+        //    {
+        //        FieldsAndChipsMainWindow.Icon = BitmapFrame.Create(new Uri(Directory.GetCurrentDirectory() + "/fac.ico"));
+        //    }
+        //    catch (Exception)
+        //    {
+        //    }
+        //}
 
         public void ResizeColors()
         {
@@ -261,16 +260,16 @@ namespace FieldsAndChips
             }
         }
 
-        public void ResizeButtons()
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                menuCells[i].Height = sideArea;
-                menuCells[i].Width = sideArea;
-                Canvas.SetLeft(menuCells[i], (xCells + 2) * cellSize);
-                Canvas.SetTop(menuCells[i], i * sideArea);
-            }
-        }
+        //public void ResizeButtons()
+        //{
+        //    for (int i = 0; i < 4; i++)
+        //    {
+        //        menuCells[i].Height = sideArea;
+        //        menuCells[i].Width = sideArea;
+        //        Canvas.SetLeft(menuCells[i], (xCells + 2) * cellSize);
+        //        Canvas.SetTop(menuCells[i], i * sideArea);
+        //    }
+        //}
 
         public void ClearBoard()
         {
@@ -299,6 +298,8 @@ namespace FieldsAndChips
             }
 
             ShowGameState();
+
+            //StartingPositionToString();
         }
 
         public void ChangeBoardCell(int x, int y) 
@@ -314,29 +315,39 @@ namespace FieldsAndChips
             {
                 boardCells[x][y].ChipPicture.Visibility = Visibility.Visible;
 
-                if (chip >=1 && chip <= 10)
-                {
-                    chip += 10;
-                }
-                if (chip >=-10 && chip <= -1)
-                {
-                    chip = -chip;
-                    chip += 20;
-                }
-
-                boardCells[x][y].ChipPicture.Source = pictures[chip];
+                boardCells[x][y].ChipPicture.Source = pictures[ConvertChip(chip)];
             }
+        }
+
+        public int ConvertChip(int chip)
+        {
+            if (chip >=1 && chip <= 10)
+            {
+                chip += 10;
+                return chip;
+            }
+            else  if (chip >=-10 && chip <= -1)
+            {
+                chip = -chip;
+                chip += 20;
+                return chip;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public int ConvertField(int field)
+        {
+            field *= 100;
+            return field;
         }
 
         public void LoadPictures()
         {
             try
             {
-                menuPictures[0] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/M.png"));
-                menuPictures[1] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/B.png"));
-                menuPictures[2] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/F.png"));
-                menuPictures[3] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/Wh.png"));
-                menuPictures[4] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/Bl.png"));
                 for (int i = 0; i < 31; i++)
                 {
                     pictures[i] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/" + i + ".png"));
@@ -373,6 +384,8 @@ namespace FieldsAndChips
                     k--;
                 }
             }
+
+            //StartingPositionToString();
         }
 
         public int GetCellCoordinates(object sender, bool isX)
@@ -503,6 +516,7 @@ namespace FieldsAndChips
         public void RightDoubleClick(int x, int y)
         {
             gameState = NormalizeGameState(gameState);
+            ShowGameState();
         }
 
         public void ReserveCurrent(int x, int y)
@@ -774,6 +788,53 @@ namespace FieldsAndChips
             }
         }
 
+        public void StartingPositionToString()
+        {
+            int fieldAndChip = 0;
+            startingPosition = xCells + "#" + yCells + "#" + NormalizeGameState(gameState) + "#";
+            for (int i = 0; i < xCells; i++)
+            {
+                for (int j = 0; j < yCells; j++)
+                {
+                    fieldAndChip = ConvertField(fields[i][j]) + ConvertChip(chips[i][j]);
+                    startingPosition += fieldAndChip + ";";
+                }
+            }
+
+            //MessageBox.Show(startingPosition);
+        }
+
+        public void HistoryToString()
+        {
+            moves = "";
+
+            if (historyQueue.Count > 0)
+            {
+                for (int i = 0; i < historyQueue.Count; i++)
+                {
+                    for (int j = 0; j < historyQueue[i].Count; j++)
+                    {
+                        moves += historyQueue[i][j] + ";";
+                    }
+                    moves += "#";
+                }
+            }
+
+            if (historyStack.Count >0)
+            {
+                for (int i = historyStack.Count - 1; i > -1 ; i--)
+                {
+                    for (int j = 0; j < historyStack[i].Count; j++)
+                    {
+                        moves += historyStack[i][j] + ";";
+                    }
+                    moves += "#";
+                }
+            }
+
+            MessageBox.Show(moves);
+        }
+
         public void ClearHistory()
         {
             historyQueue.Clear();
@@ -860,7 +921,7 @@ namespace FieldsAndChips
             }
             else
             {
-                MessageBox.Show("There are no more moves back in history.");
+                //MessageBox.Show("There are no more moves back in history.");
             }
         }
 
@@ -913,30 +974,51 @@ namespace FieldsAndChips
             }
             else
             {
-                MessageBox.Show("There are no moves forward in history.");
+                //MessageBox.Show("There are no moves forward in history.");
             }
         }
 
         public void ShowGameState()
         {
-            if (gameState > 0)
+            switch (gameState)
             {
-                menuCells[3].FieldPicture.Visibility = Visibility.Visible;
-                menuCells[3].ChipPicture.Visibility = Visibility.Hidden;
-            }
-            if (gameState < 0)
-            {
-                menuCells[3].FieldPicture.Visibility = Visibility.Hidden;
-                menuCells[3].ChipPicture.Visibility = Visibility.Visible;
+                case 1:
+                    gameStatus.Text = "White: Left click to select a piece. Double click to colorize a square.";
+                    break;
+                case -1:
+                    gameStatus.Text = "Black: Left click to select a piece. Double click to colorize a square.";
+                    break;
+                case 2:
+                    gameStatus.Text = "White: Left click to move to a square. Right click to promote on a square.";
+                    break;
+                case -2:
+                    gameStatus.Text = "Black: Left click to move to a square. Right click to promote on a square.";
+                    break;
+                case 3:
+                    gameStatus.Text = "White: Setting random color on a chosen square.";
+                    break;
+                case -3:
+                    gameStatus.Text = "Black: Setting random color on a chosen square.";
+                    break;
+                case 4:
+                    gameStatus.Text = "White: Left click on a desired color to colorize a chosen square.";
+                    break;
+                case -4:
+                    gameStatus.Text = "Black: Left click on a desired color to colorize a chosen square.";
+                    break;
+                case 5:
+                    gameStatus.Text = "White: Left click to set a piece on a desired square.";
+                    break;
+                case -5:
+                    gameStatus.Text = "Black: Left click to set a piece on a desired square.";
+                    break;
             }
         }
 
         public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             SetResolution();
-
             ResizeBoard();
-
             ResizeColors();
         }
 
@@ -957,21 +1039,17 @@ namespace FieldsAndChips
             MessageBox.Show("Right");
         }
 
-        public void menu_LeftClick(object sender, MouseButtonEventArgs e)
+        public void menu_Click(object sender, RoutedEventArgs e)
         {
-            if (isMenuOpened == false)
-            {
-                isMenuOpened = true;
-                new Menu().Show();
-            }
+                new Menu().ShowDialog();
         }
 
-        public void stepBackward_LeftClick(object sender, MouseButtonEventArgs e)
+        public void stepBackward_Click(object sender, RoutedEventArgs e)
         {
             StepBack();
         }
 
-        public void stepForward_LeftClick(object sender, MouseButtonEventArgs e)
+        public void stepForward_Click(object sender, RoutedEventArgs e)
         {
             StepForward();
         }
@@ -983,13 +1061,11 @@ namespace FieldsAndChips
                 leftClicked++;
                 leftClicks.Add(sender);
 
-                //if (rightClicked == 0 && leftClicks.Count > 1)
                 if (leftClicks.Count > 1)
                 {
                     if (leftClicks[0] == leftClicks[1])
                     {
                         LeftDoubleClick(GetCellCoordinates(leftClicks[0], true), GetCellCoordinates(leftClicks[0], false));
-                        //MessageBox.Show("! Left Double " + GetCellCoordinates(leftClicks[0], true) + " " + GetCellCoordinates(leftClicks[0], false));
                         leftClicks.Clear();
                         rightClicks.Clear();
                     }
@@ -997,8 +1073,6 @@ namespace FieldsAndChips
                     {
                         LeftSingleClick(GetCellCoordinates(leftClicks[0], true), GetCellCoordinates(leftClicks[0], false));
                         LeftSingleClick(GetCellCoordinates(leftClicks[1], true), GetCellCoordinates(leftClicks[1], false));
-                        //MessageBox.Show("@ Left " + GetCellCoordinates(leftClicks[0], true) + " " + GetCellCoordinates(leftClicks[0], false));
-                        //MessageBox.Show("# Left " + GetCellCoordinates(leftClicks[1], true) + " " + GetCellCoordinates(leftClicks[1], false));
                         leftClicks.Clear();
                         rightClicks.Clear();
                     }
@@ -1006,11 +1080,9 @@ namespace FieldsAndChips
 
                 await Task.Delay(300);
 
-                //if (rightClicked == 0 && leftClicks.Count == 1)
                 if (leftClicks.Count == 1)
                 {
                     LeftSingleClick(GetCellCoordinates(leftClicks[0], true), GetCellCoordinates(leftClicks[0], false));
-                    //MessageBox.Show("$ Left " + GetCellCoordinates(leftClicks[0], true) + " " + GetCellCoordinates(leftClicks[0], false));
                     leftClicks.Clear();
                     rightClicks.Clear();
                 }
@@ -1030,13 +1102,11 @@ namespace FieldsAndChips
                 rightClicked++;
                 rightClicks.Add(sender);
 
-                //if (leftClicked == 0 && rightClicks.Count > 1)
                 if (rightClicks.Count > 1)
                 {
                     if (rightClicks[0] == rightClicks[1])
                     {
                         RightDoubleClick(GetCellCoordinates(rightClicks[0], true), GetCellCoordinates(rightClicks[0], false));
-                        //MessageBox.Show("! Right Double " + GetCellCoordinates(rightClicks[0], true) + " " + GetCellCoordinates(rightClicks[0], false));
                         rightClicks.Clear();
                         leftClicks.Clear();
                     }
@@ -1044,8 +1114,6 @@ namespace FieldsAndChips
                     {
                         RightSingleClick(GetCellCoordinates(rightClicks[0], true), GetCellCoordinates(rightClicks[0], false));
                         RightSingleClick(GetCellCoordinates(rightClicks[1], true), GetCellCoordinates(rightClicks[1], false));
-                        //MessageBox.Show("@ Right " + GetCellCoordinates(rightClicks[0], true) + " " + GetCellCoordinates(rightClicks[0], false));
-                        //MessageBox.Show("# Right " + GetCellCoordinates(rightClicks[1], true) + " " + GetCellCoordinates(rightClicks[1], false));
                         rightClicks.Clear();
                         leftClicks.Clear();
                     }
@@ -1053,11 +1121,9 @@ namespace FieldsAndChips
 
                 await Task.Delay(300);
 
-                //if (leftClicked == 0 && rightClicks.Count == 1)
                 if (rightClicks.Count == 1)
                 {
                     RightSingleClick(GetCellCoordinates(rightClicks[0], true), GetCellCoordinates(rightClicks[0], false));
-                    //MessageBox.Show("$ Right " + GetCellCoordinates(rightClicks[0], true) + " " + GetCellCoordinates(rightClicks[0], false));
                     rightClicks.Clear();
                     leftClicks.Clear();
                 }
@@ -1068,6 +1134,11 @@ namespace FieldsAndChips
             {
                 MessageBox.Show(ex.Message + " " + ex.StackTrace);
             }
+        }
+
+        public void random_Click(object sender, RoutedEventArgs e)
+        {
+            SetRandomStartingPosition();
         }
     }
 }

@@ -6,8 +6,10 @@
              xmlns:local="clr-namespace:FieldsAndChips"
              mc:Ignorable="d" 
              d:DesignHeight="432" d:DesignWidth="432">
-    <Grid x:Name="BoardCellCanvas">
-        <Image x:Name="FieldPicture" />
-        <Image x:Name="ChipPicture" />
-    </Grid>
+    
+        <Grid x:Name="BoardCellCanvas">
+            <Image x:Name="FieldPicture" />
+            <Image x:Name="ChipPicture" Panel.ZIndex="1" />
+        </Grid>
+    
 </UserControl>

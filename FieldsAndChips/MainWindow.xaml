@@ -6,11 +6,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FieldsAndChips"
         mc:Ignorable="d"
-        Title="Fields And Chips" Height="580" Width="799" WindowStartupLocation="CenterScreen"
+        Title="Fields And Chips" Icon="fac.ico" Height="580" Width="799" WindowStartupLocation="CenterScreen"
         SizeChanged="Window_SizeChanged">
-    <Canvas x:Name="Board" Background="#FFF6F6F6">
-       
+    <DockPanel LastChildFill="True">
 
+        <Menu DockPanel.Dock="Top" Background="#F6F6F6" Height="25">
+            <MenuItem Header="Menu">
+                <MenuItem Header="Random Position" Click="random_Click">
+                </MenuItem>
+                <MenuItem Header="Set Board Dimensions" Click="menu_Click">
+                </MenuItem>
+            </MenuItem>
+        </Menu>
 
-    </Canvas>
+        <StatusBar DockPanel.Dock="Bottom" Background="#007ACC" Height="25">
+            <TextBlock x:Name="gameStatus" Foreground="White" />
+        </StatusBar>
+
+        <StackPanel DockPanel.Dock="Right" Background="#F6F6F6" Width="80"  >
+            <Button Click="stepBackward_Click" ToolTip="Step back in history" Margin="0,0,10,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image Source="back.png"  />
+            </Button>
+            <Button Click="stepForward_Click" ToolTip="Step forward in history" Margin="0,0,10,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image Source="forward.png"  />
+            </Button>
+        </StackPanel>
+
+        <Canvas x:Name="board" Background="#F6F6F6">
+        </Canvas>
+    </DockPanel>
 </Window>

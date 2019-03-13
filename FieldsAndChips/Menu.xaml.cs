@@ -20,20 +20,18 @@ namespace FieldsAndChips
             inputYCells.Text = (Application.Current.MainWindow as MainWindow).yCells.ToString();
         }
 
-        private void randomButton_Click(object sender, RoutedEventArgs e)
+        public void randomButton_Click(object sender, RoutedEventArgs e)
         {
             (Application.Current.MainWindow as MainWindow).SetRandomStartingPosition();
             MenuWindow.Close();
-            (Application.Current.MainWindow as MainWindow).isMenuOpened = false;
         }
 
-        private void cancelButton_Click(object sender, RoutedEventArgs e)
+        public void cancelButton_Click(object sender, RoutedEventArgs e)
         {
             MenuWindow.Close();
-            (Application.Current.MainWindow as MainWindow).isMenuOpened = false;
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
+        public void okButton_Click(object sender, RoutedEventArgs e)
         {
             if (tryXCells < 7 || tryXCells > 20)
             {
@@ -48,11 +46,11 @@ namespace FieldsAndChips
                 (Application.Current.MainWindow as MainWindow).ConfigureFromMenu(tryXCells, tryYCells);
                 
                 MenuWindow.Close();
-                (Application.Current.MainWindow as MainWindow).isMenuOpened = false;
+                //(Application.Current.MainWindow as MainWindow).isMenuOpened = false;
             }
         }
 
-        private void inputXCells_TextChanged(object sender, TextChangedEventArgs e)
+        public void inputXCells_TextChanged(object sender, TextChangedEventArgs e)
         {
             bool ok = int.TryParse(inputXCells.Text, out tryXCells);
             if (ok)
@@ -64,7 +62,7 @@ namespace FieldsAndChips
             }
         }
 
-        private void inputYCells_TextChanged(object sender, TextChangedEventArgs e)
+        public void inputYCells_TextChanged(object sender, TextChangedEventArgs e)
         {
             bool ok = int.TryParse(inputYCells.Text, out tryYCells);
             if (ok)
@@ -74,6 +72,14 @@ namespace FieldsAndChips
             {
                 inputYCells.Text = "";
             }
+        }
+
+        public void testButton_Click(object sender, RoutedEventArgs e)
+        {
+            (Application.Current.MainWindow as MainWindow).HistoryToString();
+            MenuWindow.Close();
+
+            MessageBox.Show("cdsflkhdkjslf");
         }
     }
 }
