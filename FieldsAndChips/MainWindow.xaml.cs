@@ -44,6 +44,7 @@ namespace FieldsAndChips
         public List<object> leftClicks = new List<object>();
         public List<object> rightClicks = new List<object>();
 
+        int historyPointer = 0;
         public List<List<int>> historyQueue = new List<List<int>>();
         public List<List<int>> historyStack = new List<List<int>>();
 
@@ -166,8 +167,8 @@ namespace FieldsAndChips
 
         public void SetDefaultConfiguration()
         {
-            xCells = 11;
-            yCells = 14;
+            xCells = 14;
+            yCells = 11;
         }
 
         public void ClearBoard()
@@ -236,9 +237,38 @@ namespace FieldsAndChips
             }
         }
 
+        public int DeconvertChip(int cell)
+        {
+            int chip = 0;
+            int field = 0;
+            field = cell / 100;
+            chip = cell - field * 100;
+            if (chip >= 11 && chip <= 20)
+            {
+                chip -= 10;
+                return chip;
+            }
+            else if (chip >= 21 && chip <= 30)
+            {
+                chip -= 20;
+                chip = -chip;
+                return chip;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public int ConvertField(int field)
         {
             field *= 100;
+            return field;
+        }
+
+        public int DeconvertField(int cell)
+        {
+            int field = cell / 100;
             return field;
         }
 
@@ -253,7 +283,7 @@ namespace FieldsAndChips
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unable to load image " + ex.StackTrace);
+                MessageBox.Show("Unable to load image. " + ex.Message + " " + ex.StackTrace);
             }
         }
 
@@ -718,9 +748,17 @@ namespace FieldsAndChips
                 {
                     for (int j = 0; j < historyQueue[i].Count; j++)
                     {
-                        moves += historyQueue[i][j] + ";";
+                        moves += historyQueue[i][j];
+                        if (j < historyQueue[i].Count - 1)
+                        {
+                            moves += ";";
+                        }
                     }
-                    moves += "#";
+
+                    if (i < historyQueue.Count - 1)
+                    {
+                        moves += "#";
+                    }
                 }
             }
 
@@ -741,6 +779,7 @@ namespace FieldsAndChips
 
         public void ClearHistory()
         {
+            historyPointer = 0;
             historyQueue.Clear();
             historyStack.Clear();
         }
@@ -763,10 +802,13 @@ namespace FieldsAndChips
             int startFinalChip, int startFinalField)
         {
             int state = NormalizeGameState(gameState);
+            for (int i = historyQueue.Count - 1; i >= historyPointer; i--)
+            {
+                historyQueue.RemoveAt(i);
+            }
 
-            historyStack.Clear();
+            historyPointer++;
             historyQueue.Add(new List<int>());
-
             historyQueue[historyQueue.Count - 1].Add(state);
             historyQueue[historyQueue.Count - 1].Add(startX);
             historyQueue[historyQueue.Count - 1].Add(startY);
@@ -776,101 +818,77 @@ namespace FieldsAndChips
             historyQueue[historyQueue.Count - 1].Add(startFinalField);
         }
 
-        public void StepBack()
+        public void GetHistory(bool isForward)
         {
-            if (historyQueue.Count > 0)
+            if (historyQueue.Count > 0 && historyPointer > 0 && historyPointer <= historyQueue.Count)
             {
                 int x;
                 int y;
                 int chip;
                 int field;
 
-                gameState = historyQueue[historyQueue.Count - 1][0];
+                gameState = historyQueue[historyPointer - 1][0];
+                if (isForward == true)
+                {
+                    gameState = -gameState;
+                }
                 ShowGameState();
 
-                x = historyQueue[historyQueue.Count - 1][1];
-                y = historyQueue[historyQueue.Count - 1][2];
-                chip = historyQueue[historyQueue.Count - 1][3];
-                field = historyQueue[historyQueue.Count - 1][4];
+                x = historyQueue[historyPointer - 1][1];
+                y = historyQueue[historyPointer - 1][2];
+                if (isForward == false)
+                {
+                    chip = historyQueue[historyPointer - 1][3];
+                    field = historyQueue[historyPointer - 1][4];
+                }
+                else
+                {
+                    chip = historyQueue[historyPointer - 1][5];
+                    field = historyQueue[historyPointer - 1][6];
+                }
 
                 chips[x][y] = chip;
                 fields[x][y] = field;
                 ChangeBoardCell(x, y);
 
-                historyStack.Add(new List<int>());
-
-                for (int i = 0; i < 7; i++)
+                if (historyQueue[historyPointer - 1].Count == 13)
                 {
-                    historyStack[historyStack.Count - 1].Add(historyQueue[historyQueue.Count - 1][i]);
-                }
-
-                if (historyQueue[historyQueue.Count - 1].Count == 13)
-                {
-                    x = historyQueue[historyQueue.Count - 1][7];
-                    y = historyQueue[historyQueue.Count - 1][8];
-                    chip = historyQueue[historyQueue.Count - 1][9];
-                    field = historyQueue[historyQueue.Count - 1][10];
+                    x = historyQueue[historyPointer - 1][7];
+                    y = historyQueue[historyPointer - 1][8];
+                    if (isForward == false)
+                    {
+                        chip = historyQueue[historyPointer - 1][9];
+                        field = historyQueue[historyPointer - 1][10];
+                    }
+                    else
+                    {
+                        chip = historyQueue[historyPointer - 1][11];
+                        field = historyQueue[historyPointer - 1][12];
+                    }
 
                     chips[x][y] = chip;
                     fields[x][y] = field;
                     ChangeBoardCell(x, y);
-
-                    for (int i = 7; i < 13; i++)
-                    {
-                        historyStack[historyStack.Count - 1].Add(historyQueue[historyQueue.Count - 1][i]);
-                    }
                 }
-
-                historyQueue.RemoveAt(historyQueue.Count - 1);
             }
         }
 
+        public void StepBack()
+        {
+            if (historyQueue.Count > 0 && historyPointer > 0 && historyPointer <= historyQueue.Count)
+            {
+                GetHistory(false);
+                historyPointer--;
+            }    
+        }
+
+
         public void StepForward()
         {
-            if (historyStack.Count > 0)
+            if (historyQueue.Count > 0 && historyPointer < historyQueue.Count)
             {
-                int x;
-                int y;
-                int chip;
-                int field;
-
-                gameState = -historyStack[historyStack.Count - 1][0];
-                ShowGameState();
-
-                x = historyStack[historyStack.Count - 1][1];
-                y = historyStack[historyStack.Count - 1][2];
-                chip = historyStack[historyStack.Count - 1][5];
-                field = historyStack[historyStack.Count - 1][6];
-
-                chips[x][y] = chip;
-                fields[x][y] = field;
-                ChangeBoardCell(x, y);
-
-                historyQueue.Add(new List<int>());
-
-                for (int i = 0; i < 7; i++)
-                {
-                    historyQueue[historyQueue.Count - 1].Add(historyStack[historyStack.Count - 1][i]);
-                }
-
-                if (historyStack[historyStack.Count - 1].Count == 13)
-                {
-                    x = historyStack[historyStack.Count - 1][7];
-                    y = historyStack[historyStack.Count - 1][8];
-                    chip = historyStack[historyStack.Count - 1][11];
-                    field = historyStack[historyStack.Count - 1][12];
-
-                    chips[x][y] = chip;
-                    fields[x][y] = field;
-                    ChangeBoardCell(x, y);
-
-                    for (int i = 7; i < 13; i++)
-                    {
-                        historyQueue[historyQueue.Count - 1].Add(historyStack[historyStack.Count - 1][i]);
-                    }
-                }
-
-                historyStack.RemoveAt(historyStack.Count - 1);
+                historyPointer++;
+                GetHistory(true);
             }
         }
 
@@ -915,6 +933,7 @@ namespace FieldsAndChips
         {
             try
             {
+                ClearBoard();
                 int tryXCells = savedGame.HorizontalCells;
                 int tryYCells = savedGame.VerticalCells;
 
@@ -922,23 +941,78 @@ namespace FieldsAndChips
                 {
                     xCells = tryXCells;
                     yCells = tryYCells;
-                    ConfigureBoard();
+                    SetBoard();
 
                     string savedGameStartingPosition = savedGame.StartingPosition;
                     SetSavedGameStartingPosition(savedGameStartingPosition);
+                    SetStartingPositionString();
+                    this.savedGame = savedGame;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Unable to load game.");
+                MessageBox.Show("Unable to load game. The default configuration will be loaded. " + ex.Message + " " + ex.StackTrace);
                 SetDefaultConfiguration();
                 ConfigureBoard();
+            }
+
+            try
+            {
+                SetSavedGameHistory(savedGame.Moves);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to load game history. " + ex.Message + " " + ex.StackTrace);
             }
         }
 
         public void SetSavedGameStartingPosition(string savedGameStartingPosition)
         {
-            // ================================= GO ON HERE ===================================
+            string[] startingPositionString = new string[2];
+            List<string> startingPositionList = new List<string>();
+            startingPositionString = savedGameStartingPosition.Split('#');
+            gameState = int.Parse(startingPositionString[0]);
+            startingPositionList = startingPositionString[1].Split(';').ToList();
+
+            int cell = 0;
+            int chip = 0;
+            int field = 0;
+            int k = 0;
+            for (int i = 0; i < xCells; i++)
+            {
+                fields.Add(new List<int>());
+                chips.Add(new List<int>());
+
+                for (int j = 0; j < yCells; j++)
+                {
+                    cell = int.Parse(startingPositionList[k]);
+                    chip = DeconvertChip(cell);
+                    field = DeconvertField(cell);
+                    chips[i].Add(chip);
+                    fields[i].Add(field);
+                    ChangeBoardCell(i, j);
+                    k++;
+                }
+            }
+            ShowGameState();
+        }
+
+        public void SetSavedGameHistory(string moves)
+        {
+            List<string> movesString = new List<string>();
+            List<string> moveLine = new List<string>();
+            movesString = moves.Split('#').ToList();
+            for (int i = 0; i < movesString.Count; i++)
+            {
+                moveLine.Clear();
+                moveLine = movesString[i].Split(';').ToList();
+                historyQueue.Add(new List<int>());
+                for (int j = 0; j < moveLine.Count; j++)
+                {
+                    int moveElement = int.Parse(moveLine[j]);
+                    historyQueue[i].Add(moveElement);
+                }
+            }
         }
 
         public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
