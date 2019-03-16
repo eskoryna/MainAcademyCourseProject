@@ -30,11 +30,17 @@
         </StatusBar>
 
         <StackPanel DockPanel.Dock="Right" Background="#F6F6F6" Width="60"  >
-            <Button Click="stepBackward_Click" ToolTip="Step back in history" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button Click="toStart_Click" ToolTip="To the game start" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image Source="fback.png"  />
+            </Button>
+            <Button Click="stepBackward_Click" ToolTip="One move backward" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image Source="back.png"  />
             </Button>
-            <Button Click="stepForward_Click" ToolTip="Step forward in history" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button Click="stepForward_Click" ToolTip="One move forward" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image Source="forward.png"  />
+            </Button>
+            <Button Click="toEnd_Click" ToolTip="To the game end" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image Source="fforward.png"  />
             </Button>
         </StackPanel>
 

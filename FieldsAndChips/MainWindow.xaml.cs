@@ -882,13 +882,34 @@ namespace FieldsAndChips
             }    
         }
 
-
         public void StepForward()
         {
             if (historyQueue.Count > 0 && historyPointer < historyQueue.Count)
             {
                 historyPointer++;
                 GetHistory(true);
+            }
+        }
+
+        public void MoveToStart()
+        {
+            if (historyQueue.Count > 0)
+            {
+                while (historyPointer >= 1)
+                {
+                    StepBack();
+                }
+            }
+        }
+
+        public void MoveToEnd()
+        {
+            if (historyQueue.Count > 0)
+            {
+                while (historyPointer < historyQueue.Count)
+                {
+                    StepForward();
+                }
             }
         }
 
@@ -1034,7 +1055,17 @@ namespace FieldsAndChips
 
         public void changeDimensions_Click(object sender, RoutedEventArgs e)
         {
-                new ChangeDimensions().ShowDialog();
+            new ChangeDimensions().ShowDialog();
+        }
+
+        public void toStart_Click(object sender, RoutedEventArgs e)
+        {
+            MoveToStart();
+        }
+
+        public void toEnd_Click(object sender, RoutedEventArgs e)
+        {
+            MoveToEnd();
         }
 
         public void stepBackward_Click(object sender, RoutedEventArgs e)
