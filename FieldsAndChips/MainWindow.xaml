@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FieldsAndChips"
         mc:Ignorable="d"
-        Title="Fields And Chips" Icon="fac.ico" Height="580" Width="799" WindowStartupLocation="CenterScreen"
+        Title="Fields And Chips" Icon="Images/fac.ico" Height="580" Width="799" WindowStartupLocation="CenterScreen"
         SizeChanged="Window_SizeChanged">
     <DockPanel Background="#F6F6F6" LastChildFill="True">
 
@@ -29,41 +29,45 @@
             <TextBlock x:Name="gameStatus" Foreground="White" />
         </StatusBar>
 
-        <StackPanel DockPanel.Dock="Right" Background="#F6F6F6" Width="60"  >
-            <Button Click="toStart_Click" ToolTip="To the game start" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image Source="fback.png"  />
+        <WrapPanel DockPanel.Dock="Right" Background="#F6F6F6" Orientation="Vertical" ItemWidth="55" ItemHeight="55" Margin="0,0,5,0" >
+            <Grid>
+                <Image x:Name="whiteMove" Width="50" Height="50"  Source="Images/whitemove.png" Visibility="Hidden"/>
+                <Image x:Name="blackMove" Width="50" Height="50" Source="Images/blackmove.png" Visibility="Hidden"/>
+            </Grid>
+            <Button Click="toStart_Click" ToolTip="To the game start" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image Source="Images/fback.png"  />
             </Button>
-            <Button Click="stepBackward_Click" ToolTip="One move backward" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image Source="back.png"  />
+            <Button Click="stepBackward_Click" ToolTip="One move backward" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image Source="Images/back.png"  />
             </Button>
-            <Button Click="stepForward_Click" ToolTip="One move forward" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image Source="forward.png"  />
+            <Button Click="stepForward_Click" ToolTip="One move forward" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image Source="Images/forward.png"  />
             </Button>
-            <Button Click="toEnd_Click" ToolTip="To the game end" Margin="0,0,5,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image Source="fforward.png"  />
+            <Button Click="toEnd_Click" ToolTip="To the game end" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                <Image Source="Images/fforward.png"  />
             </Button>
-        </StackPanel>
+        </WrapPanel>
 
         <WrapPanel DockPanel.Dock="Right" Background="#F6F6F6" Orientation="Vertical" ItemWidth="55" ItemHeight="55">
-            <Button x:Name="buttonRed" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button x:Name="buttonRed" Focusable="False"  Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image x:Name="colorRed"/>
             </Button>
-            <Button x:Name="buttonOrange" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button x:Name="buttonOrange" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image x:Name="colorOrange"/>
             </Button>
-            <Button x:Name="buttonYellow" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button x:Name="buttonYellow" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image x:Name="colorYellow"/>
             </Button>
-            <Button x:Name="buttonGreen" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button x:Name="buttonGreen" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image x:Name="colorGreen"/>
             </Button>
-            <Button x:Name="buttonAzure" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button x:Name="buttonAzure" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image x:Name="colorAzure"/>
             </Button>
-            <Button x:Name="buttonBlue" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button x:Name="buttonBlue" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image x:Name="colorBlue"/>
             </Button>
-            <Button x:Name="buttonViolet" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <Button x:Name="buttonViolet" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                 <Image x:Name="colorViolet"/>
             </Button>
         </WrapPanel>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FieldsAndChips"
         mc:Ignorable="d"
-        Title="Save Game" Icon="fac.ico" Background="#F6F6F6" Height="120" Width="380" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="Save Game" Icon="Images/fac.ico" Background="#F6F6F6" Height="120" Width="380" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="8" />

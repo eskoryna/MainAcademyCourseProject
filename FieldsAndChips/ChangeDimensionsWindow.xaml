@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FieldsAndChips"
         mc:Ignorable="d"
-        Title="Change Board Dimensions" x:Name="changeDimensionsWindow" Icon="fac.ico" Background="#F6F6F6" Height="160" Width="220" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="Change Board Dimensions" x:Name="changeDimensionsWindow" Icon="Images/fac.ico" Background="#F6F6F6" Height="160" Width="220" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="11" />

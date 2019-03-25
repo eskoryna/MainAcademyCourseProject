@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -276,14 +277,14 @@ namespace FieldsAndChips
         {
             try
             {
-                for (int i = 0; i < 31; i++)
+                for (int i = 1; i < 31; i++)
                 {
-                    pictures[i] = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/images/" + i + ".png"));
+                    pictures[i] = new BitmapImage(new Uri("Images/" + i + ".png", UriKind.Relative));
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unable to load image. " + ex.Message + " " + ex.StackTrace);
+                MessageBox.Show("Unable to load an image. " + ex.Message + " " + ex.StackTrace);
             }
         }
 
@@ -718,9 +719,7 @@ namespace FieldsAndChips
 
         public string CurrentDateToString()
         {
-            string gameDate = "";
-            DateTime currentDate = DateTime.Now;
-            gameDate = currentDate.Year + "/" + currentDate.Month.ToString("D2") + "/" + currentDate.Day.ToString("D2");
+            string gameDate = DateTime.Now.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture);
             return gameDate;
         }
 
@@ -919,33 +918,53 @@ namespace FieldsAndChips
             {
                 case 1:
                     gameStatus.Text = "White: Left click to select a piece. Double click to colorize a square.";
+                    whiteMove.Visibility = Visibility.Visible;
+                    blackMove.Visibility = Visibility.Hidden;
                     break;
                 case -1:
                     gameStatus.Text = "Black: Left click to select a piece. Double click to colorize a square.";
+                    whiteMove.Visibility = Visibility.Hidden;
+                    blackMove.Visibility = Visibility.Visible;
                     break;
                 case 2:
                     gameStatus.Text = "White: Left click to move to a square. Right click to promote on a square.";
+                    whiteMove.Visibility = Visibility.Visible;
+                    blackMove.Visibility = Visibility.Hidden;
                     break;
                 case -2:
                     gameStatus.Text = "Black: Left click to move to a square. Right click to promote on a square.";
+                    whiteMove.Visibility = Visibility.Hidden;
+                    blackMove.Visibility = Visibility.Visible;
                     break;
                 case 3:
                     gameStatus.Text = "White: Setting random color on a chosen square.";
+                    whiteMove.Visibility = Visibility.Visible;
+                    blackMove.Visibility = Visibility.Hidden;
                     break;
                 case -3:
                     gameStatus.Text = "Black: Setting random color on a chosen square.";
+                    whiteMove.Visibility = Visibility.Hidden;
+                    blackMove.Visibility = Visibility.Visible;
                     break;
                 case 4:
                     gameStatus.Text = "White: Left click on a desired color to colorize a chosen square.";
+                    whiteMove.Visibility = Visibility.Visible;
+                    blackMove.Visibility = Visibility.Hidden;
                     break;
                 case -4:
                     gameStatus.Text = "Black: Left click on a desired color to colorize a chosen square.";
+                    whiteMove.Visibility = Visibility.Hidden;
+                    blackMove.Visibility = Visibility.Visible;
                     break;
                 case 5:
                     gameStatus.Text = "White: Left click to set a piece on a desired square.";
+                    whiteMove.Visibility = Visibility.Visible;
+                    blackMove.Visibility = Visibility.Hidden;
                     break;
                 case -5:
                     gameStatus.Text = "Black: Left click to set a piece on a desired square.";
+                    whiteMove.Visibility = Visibility.Hidden;
+                    blackMove.Visibility = Visibility.Visible;
                     break;
             }
         }
@@ -1020,18 +1039,21 @@ namespace FieldsAndChips
 
         public void SetSavedGameHistory(string moves)
         {
-            List<string> movesString = new List<string>();
-            List<string> moveLine = new List<string>();
-            movesString = moves.Split('#').ToList();
-            for (int i = 0; i < movesString.Count; i++)
+            if (moves.Length > 0)
             {
-                moveLine.Clear();
-                moveLine = movesString[i].Split(';').ToList();
-                historyQueue.Add(new List<int>());
-                for (int j = 0; j < moveLine.Count; j++)
+                List<string> movesString = new List<string>();
+                List<string> moveLine = new List<string>();
+                movesString = moves.Split('#').ToList();
+                for (int i = 0; i < movesString.Count; i++)
                 {
-                    int moveElement = int.Parse(moveLine[j]);
-                    historyQueue[i].Add(moveElement);
+                    moveLine.Clear();
+                    moveLine = movesString[i].Split(';').ToList();
+                    historyQueue.Add(new List<int>());
+                    for (int j = 0; j < moveLine.Count; j++)
+                    {
+                        int moveElement = int.Parse(moveLine[j]);
+                        historyQueue[i].Add(moveElement);
+                    }
                 }
             }
         }

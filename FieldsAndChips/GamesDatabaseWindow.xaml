@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FieldsAndChips"
         mc:Ignorable="d"
-        Title="Games Database" x:Name="gamesDatabaseWindow" Icon="fac.ico" WindowStartupLocation="CenterScreen" Height="380" Width="500">
+        Title="Games Database" x:Name="gamesDatabaseWindow" Icon="Images/fac.ico" WindowStartupLocation="CenterScreen" Height="380" Width="500">
     <Grid Background="#F6F6F6">
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
 
         <DataGrid x:Name="savedGamesGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" Background="#F6F6F6" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="DarkGray"
-    RowBackground="LightGray" AlternatingRowBackground="White" SelectionMode="Single" CanUserAddRows="False" >
+    RowBackground="White" SelectionMode="Single" CanUserAddRows="False" >
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding GameName}" Header="Game Name"/>
                 <DataGridTextColumn Binding="{Binding GameDate}" Header="Game Date" IsReadOnly="True"/>
@@ -24,7 +24,7 @@
         <StackPanel HorizontalAlignment="Center"  Grid.Row="1" Orientation="Horizontal">
             <Button x:Name="loadButton" Content="Load" Width="50" Margin="10" Click="loadButton_Click" />
             <Button x:Name="deleteButton" Content="Delete" Width="50" Margin="10" Click="deleteButton_Click" />
-            <Button x:Name="updateButton" Content="Modify" Width="50" Margin="10" Click="updateButton_Click" />
+            <Button x:Name="updateButton" Content="Rename" Width="50" Margin="10" Click="updateButton_Click" />
         </StackPanel>
     </Grid>
 </Window>
