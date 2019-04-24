@@ -6,13 +6,14 @@ namespace FieldsAndChips
     public partial class GamesDatabaseWindow : Window
     {
         ApplicationContext db;
-        public GamesDatabaseWindow()
+        IGameLogic gameLogic;
+
+        public GamesDatabaseWindow(IGameLogic gameLogic)
         {
             InitializeComponent();
-
+            this.gameLogic = gameLogic;
             db = new ApplicationContext();
             db.SavedGames.Load();
-            //DataContext = db.SavedGames.Local.ToBindingList();
             savedGamesGrid.ItemsSource = db.SavedGames.Local.ToBindingList();
 
             Closing += gameDatabaseWindow_Closing;
@@ -39,14 +40,9 @@ namespace FieldsAndChips
 
             if (gameToLoad != null)
             {
-                //MessageBox.Show(gameToLoad.GameDate + " " + gameToLoad.GameName + " " + gameToLoad.StartingPosition +
-                //" " + gameToLoad.Moves);
-                (Application.Current.MainWindow as MainWindow).LoadGame(gameToLoad);
+                gameLogic.LoadGame(gameToLoad);
                 gamesDatabaseWindow.Close();
             }
-
-            //MessageBox.Show(gameToLoad.Moves);
-
         }
 
         private void gameDatabaseWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

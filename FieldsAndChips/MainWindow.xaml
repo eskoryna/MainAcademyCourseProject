@@ -50,25 +50,25 @@
 
         <WrapPanel DockPanel.Dock="Right" Background="#F6F6F6" Orientation="Vertical" ItemWidth="55" ItemHeight="55">
             <Button x:Name="buttonRed" Focusable="False"  Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image x:Name="colorRed"/>
+                <Image x:Name="colorRed" Source="Images/1.png"/>
             </Button>
             <Button x:Name="buttonOrange" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image x:Name="colorOrange"/>
+                <Image x:Name="colorOrange" Source="Images/2.png"/>
             </Button>
             <Button x:Name="buttonYellow" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image x:Name="colorYellow"/>
+                <Image x:Name="colorYellow" Source="Images/3.png"/>
             </Button>
             <Button x:Name="buttonGreen" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image x:Name="colorGreen"/>
+                <Image x:Name="colorGreen" Source="Images/4.png"/>
             </Button>
             <Button x:Name="buttonAzure" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image x:Name="colorAzure"/>
+                <Image x:Name="colorAzure" Source="Images/5.png"/>
             </Button>
             <Button x:Name="buttonBlue" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image x:Name="colorBlue"/>
+                <Image x:Name="colorBlue" Source="Images/6.png"/>
             </Button>
             <Button x:Name="buttonViolet" Focusable="False" Click="color_LeftClick" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                <Image x:Name="colorViolet"/>
+                <Image x:Name="colorViolet" Source="Images/7.png"/>
             </Button>
         </WrapPanel>
 

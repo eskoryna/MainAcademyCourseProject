@@ -77,9 +77,14 @@
     <Compile Include="ChangeDimensionsWindow.xaml.cs">
       <DependentUpon>ChangeDimensionsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GameHistory.cs" />
+    <Compile Include="GameLogic.cs" />
     <Compile Include="GamesDatabaseWindow.xaml.cs">
       <DependentUpon>GamesDatabaseWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="IGameFront.cs" />
+    <Compile Include="IGameHistory.cs" />
+    <Compile Include="IGameLogic.cs" />
     <Compile Include="SavedGame.cs" />
     <Compile Include="SaveGameWindow.xaml.cs">
       <DependentUpon>SaveGameWindow.xaml</DependentUpon>
